@@ -15,7 +15,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         let image = UIImage(named: "rainbow")
         
-        var lepton = LPImageFilter()
+        let lepton = LPImageFilter()
         var x = lepton.blurImage(image!)!
         let imageView = UIImageView(image: x)
         imageView.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
@@ -24,6 +24,8 @@ class ViewController: UIViewController {
         newImageView.frame = CGRect(x: 0, y: 310, width: 300, height: 300)
         view.addSubview(newImageView)
         // Do any additional setup after loading the view, typically from a nib.
+        
+        let gaussian3 = lepton.makeGaussianFilter(1)
     }
 
     override func didReceiveMemoryWarning() {
