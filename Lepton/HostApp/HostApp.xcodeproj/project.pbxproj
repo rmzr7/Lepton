@@ -14,6 +14,7 @@
 		B8970D8F1DDAAFA200C8EB10 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B8970D8D1DDAAFA200C8EB10 /* LaunchScreen.storyboard */; };
 		B8970D9A1DDAAFA200C8EB10 /* HostAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8970D991DDAAFA200C8EB10 /* HostAppTests.swift */; };
 		B8970DA51DDAAFA200C8EB10 /* HostAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8970DA41DDAAFA200C8EB10 /* HostAppUITests.swift */; };
+		CC3319DB1DDBDAD9009B5C5A /* Lepton.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC08BF281DDBDA9000F82684 /* Lepton.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,27 @@
 			remoteGlobalIDString = B8970D801DDAAFA200C8EB10;
 			remoteInfo = HostApp;
 		};
+		CC08BF271DDBDA9000F82684 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CC08BF221DDBDA9000F82684 /* Lepton.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CC10A0751DD441D500C1ED90;
+			remoteInfo = Lepton;
+		};
+		CC08BF291DDBDA9000F82684 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CC08BF221DDBDA9000F82684 /* Lepton.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CC10A07F1DD441D500C1ED90;
+			remoteInfo = LeptonTests;
+		};
+		CC3319D71DDBDAD4009B5C5A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CC08BF221DDBDA9000F82684 /* Lepton.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = CC10A0741DD441D500C1ED90;
+			remoteInfo = Lepton;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +69,7 @@
 		B8970DA01DDAAFA200C8EB10 /* HostAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HostAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8970DA41DDAAFA200C8EB10 /* HostAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostAppUITests.swift; sourceTree = "<group>"; };
 		B8970DA61DDAAFA200C8EB10 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CC08BF221DDBDA9000F82684 /* Lepton.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Lepton.xcodeproj; path = ../../Lepton/Lepton.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC3319DB1DDBDAD9009B5C5A /* Lepton.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +121,7 @@
 		B8970D831DDAAFA200C8EB10 /* HostApp */ = {
 			isa = PBXGroup;
 			children = (
+				CC08BF221DDBDA9000F82684 /* Lepton.xcodeproj */,
 				B8970D841DDAAFA200C8EB10 /* AppDelegate.swift */,
 				B8970D861DDAAFA200C8EB10 /* ViewController.swift */,
 				B8970D881DDAAFA200C8EB10 /* Main.storyboard */,
@@ -125,6 +150,15 @@
 			path = HostAppUITests;
 			sourceTree = "<group>";
 		};
+		CC08BF231DDBDA9000F82684 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CC08BF281DDBDA9000F82684 /* Lepton.framework */,
+				CC08BF2A1DDBDA9000F82684 /* LeptonTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -139,6 +173,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				CC3319D81DDBDAD4009B5C5A /* PBXTargetDependency */,
 			);
 			name = HostApp;
 			productName = HostApp;
@@ -215,6 +250,12 @@
 			mainGroup = B8970D781DDAAFA200C8EB10;
 			productRefGroup = B8970D821DDAAFA200C8EB10 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = CC08BF231DDBDA9000F82684 /* Products */;
+					ProjectRef = CC08BF221DDBDA9000F82684 /* Lepton.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				B8970D801DDAAFA200C8EB10 /* HostApp */,
@@ -223,6 +264,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		CC08BF281DDBDA9000F82684 /* Lepton.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Lepton.framework;
+			remoteRef = CC08BF271DDBDA9000F82684 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		CC08BF2A1DDBDA9000F82684 /* LeptonTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = LeptonTests.xctest;
+			remoteRef = CC08BF291DDBDA9000F82684 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		B8970D7F1DDAAFA200C8EB10 /* Resources */ = {
@@ -289,6 +347,11 @@
 			isa = PBXTargetDependency;
 			target = B8970D801DDAAFA200C8EB10 /* HostApp */;
 			targetProxy = B8970DA11DDAAFA200C8EB10 /* PBXContainerItemProxy */;
+		};
+		CC3319D81DDBDAD4009B5C5A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Lepton;
+			targetProxy = CC3319D71DDBDAD4009B5C5A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -482,6 +545,7 @@
 				B8970DAB1DDAAFA200C8EB10 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B8970DAC1DDAAFA200C8EB10 /* Build configuration list for PBXNativeTarget "HostAppTests" */ = {
 			isa = XCConfigurationList;
@@ -490,6 +554,7 @@
 				B8970DAE1DDAAFA200C8EB10 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B8970DAF1DDAAFA200C8EB10 /* Build configuration list for PBXNativeTarget "HostAppUITests" */ = {
 			isa = XCConfigurationList;
@@ -498,6 +563,7 @@
 				B8970DB11DDAAFA200C8EB10 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
