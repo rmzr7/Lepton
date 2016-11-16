@@ -9,17 +9,30 @@
 import UIKit
 import Accelerate
 
-struct LPMask:NSObject {
-    var height
+public struct LPMask {
+    var height = 0
+    var width = 0
+    var mask:[[Double]]!
     
+    init(height:Int=3, width:Int=3, mask:[[Double]] = [
+        [0.2, 0.2, 0.0],
+        [0.2, 0.2, 0.2],
+        [0.0, 0.2, 0.0]
+        ]) {
+        assert(height == mask.count)
+        self.height = height
+        self.width = width
+        self.mask = mask
+    }
 }
+
 
 public class LPImageFilter: NSObject {
     public override init() {
         super.init()
     }
     
-    public func blurImage(image:UIImage) -> UIImage? {
+    public func blurImage(image:UIImage, mask:LPMask = LPMask()) -> UIImage? {
         
         let pixels = RGBA(image:image)!
         let width = pixels.width
@@ -34,12 +47,12 @@ public class LPImageFilter: NSObject {
 
                 for fy in 0..<3 {
                     for fx in 0..<3 {
-                        let imageX:Int = (x - 3 / 2 + fx + pixels.width) % width
-                        let imageY:Int = (y - 3 / 2 + fy + pixels.height) % height
+                        let imageX:Int = (x - mask.width / 2 + fx + pixels.width) % width
+                        let imageY:Int = (y - mask.height / 2 + fy + pixels.height) % height
                         let pixel = pixels.pixels[(imageY * width + imageX)]
-                        red += Double(pixel.red) * filter[fy][fx]
-                        green += Double(pixel.green) * filter[fy][fx]
-                        blue += Double(pixel.blue) * filter[fy][fx]
+                        red += Double(pixel.red) * mask.mask[fy][fx]
+                        green += Double(pixel.green) * mask.mask[fy][fx]
+                        blue += Double(pixel.blue) * mask.mask[fy][fx]
                     }
                 }
                 
@@ -58,11 +71,7 @@ public class LPImageFilter: NSObject {
 
     }
 
-    var filter = [
-        [0.2, 0.2, 0.0],
-        [0.2, 0.2, 0.2],
-        [0.0, 0.2, 0.0]
-    ]
+
     
     
 }
