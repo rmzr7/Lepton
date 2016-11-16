@@ -9,50 +9,53 @@
 import UIKit
 import Accelerate
 
-class LPImageFilter: NSObject {
-    override init() {
+public class LPImageFilter: NSObject {
+    public override init() {
         super.init()
     }
     
-    func mask8(x:UInt32) -> UInt32 {
-        return x & 0xFF
-    }
-    func getRed(x:UInt32) -> UInt32 {
-        return mask8(x)
-    }
-    func getGreen(x:UInt32) -> UInt32 {
-        return mask8(x >> 8 )
-    }
-    func getBlue(x:UInt32) -> UInt32 {
-        return mask8(x >> 16)
-    }
-    
-    func loadImage(image:CGImageRef) -> CGImage? {
+    public func blurImage(image:UIImage) -> UIImage? {
         
-        let width = CGImageGetWidth(image)
-        let height = CGImageGetHeight(image)
+        let pixels = RGBA(image:image)!
+        let width = pixels.width
+        let height = pixels.height
+        let factor = 1.0
+        let bias = 0.0
+        for y in 0..<pixels.height {
+            for x in 0..<pixels.width {
+                let idx = y*pixels.width+x
+                var red = 0.0, green = 0.0, blue = 0.0
+
+
+                for fy in 0..<3 {
+                    for fx in 0..<3 {
+                        let imageX:Int = (x - 3 / 2 + fx + pixels.width) % width
+                        let imageY:Int = (y - 3 / 2 + fy + pixels.height) % height
+                        let pixel = pixels.pixels[(imageY * width + imageX)]
+                        red += Double(pixel.red) * filter[fy][fx]
+                        green += Double(pixel.green) * filter[fy][fx]
+                        blue += Double(pixel.blue) * filter[fy][fx]
+                    }
+                }
+                
+                let newR = min(max(UInt8(factor * red + bias), 0), 255)
+                let newG = min(max(UInt8(factor * green + bias), 0), 255)
+                let newB = min(max(UInt8(factor * blue + bias), 0), 255)
+                var pixel = pixels.pixels[idx]
+                pixel.red = 0
+                pixel.green = newG
+                pixel.blue = newB
+                pixels.pixels[idx] = pixel
+            }
+        }
         
-        let bytesPerPixel = 4
-        let bytesPerRow = bytesPerPixel*width
-        let bitsPerComponent = 8
-        
-        var pixels = [UInt32](count: height*width, repeatedValue: 0)
-        
-        var colorSpace = CGColorSpaceCreateDeviceRGB()
-        var context = CGBitmapContextCreate(&pixels, width, height, bitsPerComponent, bytesPerRow, colorSpace, 0)
-        
-        CGContextDrawImage(context, CGRectMake(0, 0, CGFloat(width), CGFloat(height)), image)
-        blurImage(pixels, width: width, height: height)
-        
-        var realImage = CGBitmapContextCreateImage(context)
-        return realImage
+        return pixels.toUIImage()
     }
     
     func blurImage(image:[UInt32], width:Int, height:Int) -> [UInt32] {
         
         var result = [UInt32](count: height*width, repeatedValue: 0)
-        let factor = 1.0
-        let bias = 0.0
+
 
         
         for x in 0...width {
@@ -63,19 +66,19 @@ class LPImageFilter: NSObject {
                     for fy in 0...3 {
                         let imageX:Int = (x - 3 / 2 + fx + width) % width
                         let imageY:Int = (y - 3 / 2 + fy + height) % height
-                        red += Double(getRed(image[(imageY * width + imageX)])) * filter[fy][fx]
-                        green += Double(getGreen(image[imageY * width + imageX])) * filter[fy][fx]
-                        blue += Double(getBlue(image[imageY * width + imageX])) * filter[fy][fx]
+//                        red += Double(getRed(image[(imageY * width + imageX)])) * filter[fy][fx]
+//                        green += Double(getGreen(image[imageY * width + imageX])) * filter[fy][fx]
+//                        blue += Double(getBlue(image[imageY * width + imageX])) * filter[fy][fx]
 
                     }
                 }
+//                
+//                let newR = min(max(UInt32(factor * red + bias), 0), 255)
+//                let newG = min(max(UInt32(factor * green + bias), 0), 255)
+//                let newB = min(max(UInt32(factor * blue + bias), 0), 255)
+//                let newPixel = newB << 16 | newG << 8 | newR
                 
-                let newR = min(max(UInt32(factor * red + bias), 0), 255)
-                let newG = min(max(UInt32(factor * green + bias), 0), 255)
-                let newB = min(max(UInt32(factor * blue + bias), 0), 255)
-                let newPixel = newB << 16 | newG << 8 | newR
-                
-                result[y * width + x] = newPixel
+//                result[y * width + x] = newPixel
                 
             }
         }
@@ -95,6 +98,7 @@ class LPImageFilter: NSObject {
     
     
 }
+
 
 extension Int {
     public var toU8: UInt8{ get{return UInt8(truncatingBitPattern:self)} }

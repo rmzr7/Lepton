@@ -7,14 +7,22 @@
 //
 
 import UIKit
+import Lepton
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         let image = UIImage(named: "rainbow")
-        let imageView = UIImageView(image: image)
+        
+        var lepton = LPImageFilter()
+        var x = lepton.blurImage(image!)!
+        let imageView = UIImageView(image: x)
+        imageView.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
         view.addSubview(imageView)
+        let newImageView = UIImageView(image: image)
+        newImageView.frame = CGRect(x: 0, y: 310, width: 300, height: 300)
+        view.addSubview(newImageView)
         // Do any additional setup after loading the view, typically from a nib.
     }
 
