@@ -20,9 +20,9 @@ class Img2ColTests: XCTestCase {
     ]
     let filter:[[Double]] =
     [
-        [1.0, 1.0, 1.0],
-        [1.0, 1.0, 1.0],
-        [1.0, 1.0, 1.0]
+        [0.2, 0.8, 0.4],
+        [0.0, 1.0, 0.1],
+        [0.4, 0.5, 0.0]
     ]
     
     override func setUp() {
@@ -58,8 +58,23 @@ class Img2ColTests: XCTestCase {
                 [10, 11, 12, 14, 15, 16, 0, 0, 0],
                 [11, 12, 0, 15, 16, 0, 0, 0, 0]
             ]
+        
         */
         XCTAssert(imgMat.count == 16)
+        XCTAssert(imgMat[0].count == 9)
+        XCTAssert(imgMat[0][8] == 6)
+        XCTAssert(imgMat[3][2] == 0)
+        XCTAssert(imgMat[4][7] == 9)
+        XCTAssert(imgMat[5][3] == 5)
+        XCTAssert(imgMat[10][6] == 14)
+        
+        XCTAssert(filtMat.count == 9)
+        XCTAssert(filtMat[0].count == 16)
+        XCTAssert(filtMat[0][0] == 0.2)
+        XCTAssert(filtMat[0][4] == 0.2)
+        XCTAssert(filtMat[4][1] == 1.0)
+        XCTAssert(filtMat[4][13] == 1.0)
+        XCTAssert(filtMat[8][15] == 0.0)
     }
 
 }

@@ -35,18 +35,16 @@ public func img2col(pixels:[[UInt32]], filter:[[Double]]) -> ([[UInt32]], [[Doub
         }
     }
     
-    var filter1d = [Double]()
+    var filterMatrix = [[Double]]()
     
     for y in 0..<filterLen {
         for x in 0..<filterLen {
-            filter1d.append(filter[y][x])
+            var filter1d = [Double]()
+            for _ in 0..<imageWidth*imageHeight {
+                filter1d.append(filter[y][x])
+            }
+            filterMatrix.append(filter1d)
         }
-    }
-    
-    var filterMatrix = [[Double]]()
-    
-    for _ in 0..<imageWidth*imageHeight {
-        filterMatrix.append(filter1d)
     }
     
     return (imgMatrix, filterMatrix)
