@@ -13,10 +13,11 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let image = UIImage(named: "rainbow")
+        let image = UIImage(named: "city")
         
-        var lepton = LPImageFilter()
-        var x = lepton.blurImage(image!)!
+        let lepton = LPImageFilter()
+        let gaussian3 = lepton.makeGaussianFilter(10)
+        var x = lepton.blurImage(image!, mask:gaussian3)!
         let imageView = UIImageView(image: x)
         imageView.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
         view.addSubview(imageView)
@@ -24,6 +25,8 @@ class ViewController: UIViewController {
         newImageView.frame = CGRect(x: 0, y: 310, width: 300, height: 300)
         view.addSubview(newImageView)
         // Do any additional setup after loading the view, typically from a nib.
+        
+        
     }
 
     override func didReceiveMemoryWarning() {

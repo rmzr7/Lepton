@@ -9,6 +9,7 @@
 import UIKit
 import Accelerate
 
+
 public struct LPMask {
     var height = 0
     var width = 0
@@ -45,8 +46,8 @@ public class LPImageFilter: NSObject {
                 var red = 0.0, green = 0.0, blue = 0.0
 
 
-                for fy in 0..<3 {
-                    for fx in 0..<3 {
+                for fy in 0..<mask.height {
+                    for fx in 0..<mask.width {
                         let imageX:Int = (x - mask.width / 2 + fx + pixels.width) % width
                         let imageY:Int = (y - mask.height / 2 + fy + pixels.height) % height
                         let pixel = pixels.pixels[(imageY * width + imageX)]
@@ -73,5 +74,29 @@ public class LPImageFilter: NSObject {
 
 
     
-    
+    public func makeGaussianFilter(radius:Int) -> LPMask {
+        let stddev = 1.5
+        var mask = [[Double]]()
+        let pi = M_PI
+        let e = 2.78
+        var sum = 0.0
+        for y in -1 * radius...radius {
+            let double_y = Double(y)
+            var row = [Double]()
+            for x in -1 * radius...radius {
+                let double_x = Double(x)
+                let exp = -1 * (double_x * double_x + double_y * double_y) / (2 * stddev * stddev)
+                let val = 1/(2 * pi * stddev * stddev) * pow(e, exp)
+                row.append( val )
+                sum += val
+            }
+            mask.append(row)
+        }
+        for r in 0..<(radius * 2 + 1) {
+            for c in 0..<(radius * 2 + 1) {
+                mask[r][c] /= sum
+            }
+        }
+        return LPMask(height: (radius * 2 + 1), width: (radius * 2 + 1), mask:mask)
+    }
 }
