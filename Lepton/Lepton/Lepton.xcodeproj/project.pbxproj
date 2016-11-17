@@ -13,6 +13,10 @@
 		CC10A0791DD441D500C1ED90 /* Lepton.h in Headers */ = {isa = PBXBuildFile; fileRef = CC10A0781DD441D500C1ED90 /* Lepton.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CC10A0801DD441D500C1ED90 /* Lepton.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC10A0751DD441D500C1ED90 /* Lepton.framework */; };
 		CC10A0851DD441D500C1ED90 /* LeptonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC10A0841DD441D500C1ED90 /* LeptonTests.swift */; };
+		CCB2FFBB1DDD7AE7005A297C /* SurgeMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFBA1DDD7AE7005A297C /* SurgeMatrix.swift */; };
+		CCB2FFBD1DDD7BAB005A297C /* SurgeArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFBC1DDD7BAB005A297C /* SurgeArithmetic.swift */; };
+		CCB2FFBF1DDD7BDE005A297C /* SurgeExponential.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFBE1DDD7BDE005A297C /* SurgeExponential.swift */; };
+		CCB2FFC11DDD7C0C005A297C /* SurgePow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFC01DDD7C0C005A297C /* SurgePow.swift */; };
 		CCEE3C2F1DDAA83D00524F6F /* LPEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCEE3C2E1DDAA83D00524F6F /* LPEngine.swift */; };
 		CCEE3C301DDAA83D00524F6F /* LPEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCEE3C2E1DDAA83D00524F6F /* LPEngine.swift */; };
 		CCEE3C321DDAA8C600524F6F /* LPImageFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCEE3C311DDAA8C600524F6F /* LPImageFilter.swift */; };
@@ -39,6 +43,10 @@
 		CC10A07F1DD441D500C1ED90 /* LeptonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LeptonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC10A0841DD441D500C1ED90 /* LeptonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeptonTests.swift; sourceTree = "<group>"; };
 		CC10A0861DD441D500C1ED90 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CCB2FFBA1DDD7AE7005A297C /* SurgeMatrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SurgeMatrix.swift; sourceTree = "<group>"; };
+		CCB2FFBC1DDD7BAB005A297C /* SurgeArithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SurgeArithmetic.swift; sourceTree = "<group>"; };
+		CCB2FFBE1DDD7BDE005A297C /* SurgeExponential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SurgeExponential.swift; sourceTree = "<group>"; };
+		CCB2FFC01DDD7C0C005A297C /* SurgePow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SurgePow.swift; sourceTree = "<group>"; };
 		CCEE3C2E1DDAA83D00524F6F /* LPEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPEngine.swift; sourceTree = "<group>"; };
 		CCEE3C311DDAA8C600524F6F /* LPImageFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPImageFilter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -83,6 +91,7 @@
 		CC10A0771DD441D500C1ED90 /* Lepton */ = {
 			isa = PBXGroup;
 			children = (
+				CCB2FFB91DDD7AD7005A297C /* Lib */,
 				CC10A0781DD441D500C1ED90 /* Lepton.h */,
 				CCEE3C2E1DDAA83D00524F6F /* LPEngine.swift */,
 				CCEE3C311DDAA8C600524F6F /* LPImageFilter.swift */,
@@ -101,6 +110,17 @@
 				B8600CAF1DDD807A0019B31E /* Img2ColTests.swift */,
 			);
 			path = LeptonTests;
+			sourceTree = "<group>";
+		};
+		CCB2FFB91DDD7AD7005A297C /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				CCB2FFBA1DDD7AE7005A297C /* SurgeMatrix.swift */,
+				CCB2FFC01DDD7C0C005A297C /* SurgePow.swift */,
+				CCB2FFBE1DDD7BDE005A297C /* SurgeExponential.swift */,
+				CCB2FFBC1DDD7BAB005A297C /* SurgeArithmetic.swift */,
+			);
+			name = Lib;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -214,7 +234,10 @@
 				CCEE3C2F1DDAA83D00524F6F /* LPEngine.swift in Sources */,
 				B8600CAE1DDD78DA0019B31E /* img2col.swift in Sources */,
 				CC08BF211DDBCDE600F82684 /* LPPixel.swift in Sources */,
+				CCB2FFC11DDD7C0C005A297C /* SurgePow.swift in Sources */,
 				CCEE3C321DDAA8C600524F6F /* LPImageFilter.swift in Sources */,
+				CCB2FFBF1DDD7BDE005A297C /* SurgeExponential.swift in Sources */,
+				CCB2FFBB1DDD7AE7005A297C /* SurgeMatrix.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
