@@ -8,6 +8,27 @@
 
 import Accelerate
 
+/// Extracting RGB channels from RGBA representation
+public func extractChannels(imageRGBA:RGBA)-> (redMatrix:Matrix<Float>, blueMatrix:Matrix<Float>, greenMatrix:Matrix<Float>) {
+    
+    let width = imageRGBA.width
+    let height = imageRGBA.height
+
+    var redMatrix = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
+    var greenMatrix = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
+    var blueMat = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
+    for y in 0..<height {
+        for x in 0..<width {
+            let idx = y*width + x
+            let pixel = imageRGBA.pixels[idx]
+            redMatrix[y,x] = Float(pixel.red)
+            greenMatrix[y,x] = Float(pixel.green)
+            blueMat[y,x] = Float(pixel.blue)
+        }
+    }
+    
+    return (redMatrix, greenMatrix, blueMat)
+}
 
 public func img2col(pixels:[[UInt32]], filter:[[Double]]) -> ([[UInt32]], [[Double]]) {
     var imgMatrix = [[UInt32]]()

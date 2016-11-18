@@ -72,7 +72,6 @@ public class LPImageFilter: NSObject {
 
     }
 
-
     
     public func makeGaussianFilter(radius:Int) -> LPMask {
         let stddev = 1.5
@@ -101,10 +100,11 @@ public class LPImageFilter: NSObject {
         return LPMask(height: (radius * 2 + 1), width: (radius * 2 + 1), mask:mask)
     }
     
-    public func AcceleratedFilter(kernel:[[Double]]) {
+    public func acceleratedBlurImageCPU(image:UIImage, kernel:[[Double]]) {
+        
         var kernelMatrix = Matrix(kernel)
         var kernelMatrixB = Matrix(kernel)
-        
+        0
         var result = kernelMatrix * kernelMatrixB
     }
     
