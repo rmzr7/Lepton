@@ -16,48 +16,63 @@ public func extractChannels(imageRGBA:RGBA)-> (redMatrix:Matrix<Float>, blueMatr
 
     var redMatrix = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
     var greenMatrix = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
-    var blueMat = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
+    var blueMatrix = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
     for y in 0..<height {
         for x in 0..<width {
             let idx = y*width + x
             let pixel = imageRGBA.pixels[idx]
             redMatrix[y,x] = Float(pixel.red)
             greenMatrix[y,x] = Float(pixel.green)
-            blueMat[y,x] = Float(pixel.blue)
+            blueMatrix[y,x] = Float(pixel.blue)
         }
     }
     
-    return (redMatrix, greenMatrix, blueMat)
+    return (redMatrix, greenMatrix, blueMatrix)
 }
 
-public func img2col(channel:[[UInt32]], filterLen:Int) -> ([[UInt32]]) {
-    var imgMatrix = [[UInt32]]()
-    let imageHeight = channel.count
-    let imageWidth = channel[0].count
+public func img2col(channel:Matrix<Float>, filterLen:Int) -> Matrix<Float> {
+    
+    let imageHeight = channel.rows
+    let imageWidth = channel.columns
+    var imgMatrix = Matrix<Float>(rows: imageHeight * imageWidth, columns: filterLen * filterLen, repeatedValue: 0)
     let radius = filterLen / 2
     for row in 0..<imageHeight {
         for col in 0..<imageWidth {
-            var conv = [UInt32]()
-            let start_x = col - radius
-            let end_x = col + radius
-            let start_y = row - radius
-            let end_y = row + radius
-            for r in start_y...end_y {
-                for c in start_x...end_x {
-                    if r >= 0 && r < imageHeight && c >= 0 && c < imageWidth {
-                        conv.append(channel[r][c])
+            
+//            let start_x = col - radius
+//            let end_x = col + radius
+//            let start_y = row - radius
+//            let end_y = row + radius
+            
+            
+            for r in -1 * radius...radius {
+                for c in -1 * radius...radius {
+                    let y = row + r
+                    let x = col + c
+                    var val:Float
+                    if y >= 0 && y < imageHeight && x >= 0 && x < imageWidth {
+                        val = channel[y,x]
                     } else {
-                        conv.append(0)
+                        val = 0.0
                     }
+                    imgMatrix[row * imageWidth + col, (r + radius) * filterLen + (c + radius)] = val
                 }
             }
-            imgMatrix.append(conv)
+            
+//            for r in start_y...end_y {
+//                for c in start_x...end_x {
+//                    var val:Float
+//                    if r >= 0 && r < imageHeight && c >= 0 && c < imageWidth {
+//                        val = channel[r,c]
+//                    } else {
+//                        val = 0.0
+//                    }
+//                    imgMatrix[row * imageWidth + col, (r + radius) * filterLen + (c + radius)] = val
+//                }
+//            }
         }
     }
     
     return imgMatrix
 }
 
-public func convolve(imgcol:[[UInt32]], filter:[[Double]]) -> ([[UInt32]]) {
-    
-}
