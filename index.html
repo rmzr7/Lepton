@@ -22,6 +22,52 @@
       <h3>
 <a id="15418-final-project" class="anchor" href="#15418-final-project" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>15418 Final Project</h3>
 
+<p>Title: Lepton, a robust, high performance parallel image processing library leveraging SIMD and GPU processing through iOS frameworks Metal and Accelerate </p>
+
+<p>Summary: We are building a high-performance image processing library on iOS that uses SIMD and GPU-based processing through Metal and Accelerate Frameworks</p>
+
+<p>Background: With the pervasiveness of social media applications such as Facebook and Snapchat, mobile phones have become the most ubiquitous computing devices in the world. One of the most common tasks these devices are used for is capturing and modifying images and videos in real time. However, massively parallel operations like image processing and live filters for videos are better accomplished on GPUs than on CPUs and the currently available libraries for mobile devices do not take advantage of the full computing power of iPhones and so we decided to see how much we can push parallelism within the resource constraints of these devices. </p>
+
+<p>We are building a framework for image processing that will be robust and abstracted well enough that it is easy to use, on top of being highly performant by taking full advantage of Accelerate and Metal. With our framework iOS developers can have access to a faster image processing library in developing social media applications.</p>
+
+<p>Challenges: This is a significant task with a variety of challenges we have to surpass
+Designing the APIs and the architecture of the framework taking into consideration the use cases and the limited time we have while managing our workload is a serious undertaking. Because this project is limited in scope to around a month, we should only focus on demonstrating a few image processing routines and not attempt to be as complete as GPUImage
+We should figure out how to parallelize different tasks and how much GPU resources vs how much CPU resources we ought to allocate
+We have to come up with a way of scheduling tasks 
+Despite all of this we should always bear in mind the resource limitations of iOS hardware. 
+Learning new tools and domains, neither of us are very experienced with Metal or Accelerate and so learning the platforms would be a challenge
+If we reach our stretch goal, distributing image processing dynamically in a mesh network where each node is performing parallel computation heavy tasks is an unprecedented task. </p>
+
+<p>Resources: <a href="https://github.com/BradLarson/GPUImage">https://github.com/BradLarson/GPUImage</a> GPUImage is a framework that uses OpenGL E.S and CoreImage to get GPU-accelerated performance. While the state of technology in iOS has significantly advanced, GPUImage gives us a starting point for understanding how an image processing framework should work and what features it should contain.</p>
+
+<p>Developer.apple.com contains docs for Accelerate and Metal.</p>
+
+<p>Goals &amp; Deliverables: 
+A set of APIs that allows users to easily performance computation heavy image processing tasks. This will contain interfaces for users and primitives we have optimized for GPU on iOS
+As a primary goal we wish to leverage GPU usage in our framework, once we have that we’d like to see if we can get SIMD processing as well
+As a stretch goal, we are interested in exploring the idea of parallel distributed image processing in a mesh network of iOS devices thus fully exploiting the limited resources available across a few iOS devices. </p>
+
+<p>Platform Choice: iOS/OSX</p>
+
+<p>Schedule:</p>
+
+<p>11/1-11/7: revise proposal, become acquainted with Swift, Metal and Accelerate, write a sample app, decide what functionalities to include in our library and write interfaces for those
+11/8-11/14: implement CPU version
+11/15-11/21: implement half of GPU version, project checkpoint
+11/22-11/28: finish GPU version
+11/29-12/5: test our library against GPUImage
+12/6-12/12: optimize
+12/13: poster session, final report</p>
+
+<p>In depth Goals</p>
+
+<p>Lepton Project Spec:
+Both the sequential version and the parallel implementations should have one of the 3 example applications</p>
+
+<p>Parallel filters
+Parallel algorithms on images
+Filters on videos</p>
+
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/remzr7/Lepton">Lepton</a> is maintained by <a href="https://github.com/remzr7">remzr7</a>.</span>
 
