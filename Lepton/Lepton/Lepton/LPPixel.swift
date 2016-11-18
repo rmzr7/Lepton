@@ -70,5 +70,14 @@ public struct RGBA {
     }
 }
 
+extension Float {
+    func toUInt8()->UInt8 {
+        return UInt8(min(max(self, 0), 255))
+    }
+}
 
-
+extension Double {
+    func toUInt8() -> UInt8 {
+        return UInt8(min(max(self, 0), 255))
+    }
+}

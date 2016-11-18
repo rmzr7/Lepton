@@ -14,6 +14,11 @@
 		CC10A0791DD441D500C1ED90 /* Lepton.h in Headers */ = {isa = PBXBuildFile; fileRef = CC10A0781DD441D500C1ED90 /* Lepton.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CC10A0801DD441D500C1ED90 /* Lepton.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC10A0751DD441D500C1ED90 /* Lepton.framework */; };
 		CC10A0851DD441D500C1ED90 /* LeptonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC10A0841DD441D500C1ED90 /* LeptonTests.swift */; };
+		CC22601B1DDE545B00A7D582 /* SurgeArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFBC1DDD7BAB005A297C /* SurgeArithmetic.swift */; };
+		CC22601C1DDE548600A7D582 /* SurgeArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFBC1DDD7BAB005A297C /* SurgeArithmetic.swift */; };
+		CC22601D1DDE548A00A7D582 /* SurgeExponential.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFBE1DDD7BDE005A297C /* SurgeExponential.swift */; };
+		CC22601E1DDE548F00A7D582 /* SurgeMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFBA1DDD7AE7005A297C /* SurgeMatrix.swift */; };
+		CC22601F1DDE548F00A7D582 /* SurgePow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFC01DDD7C0C005A297C /* SurgePow.swift */; };
 		CCB2FFBB1DDD7AE7005A297C /* SurgeMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFBA1DDD7AE7005A297C /* SurgeMatrix.swift */; };
 		CCB2FFBF1DDD7BDE005A297C /* SurgeExponential.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFBE1DDD7BDE005A297C /* SurgeExponential.swift */; };
 		CCB2FFC11DDD7C0C005A297C /* SurgePow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB2FFC01DDD7C0C005A297C /* SurgePow.swift */; };
@@ -231,6 +236,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC22601B1DDE545B00A7D582 /* SurgeArithmetic.swift in Sources */,
 				CCEE3C2F1DDAA83D00524F6F /* LPEngine.swift in Sources */,
 				B8600CAE1DDD78DA0019B31E /* img2col.swift in Sources */,
 				CC08BF211DDBCDE600F82684 /* LPPixel.swift in Sources */,
@@ -245,11 +251,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC22601C1DDE548600A7D582 /* SurgeArithmetic.swift in Sources */,
+				CC22601D1DDE548A00A7D582 /* SurgeExponential.swift in Sources */,
 				CCEE3C331DDAA8C600524F6F /* LPImageFilter.swift in Sources */,
 				B8600CB01DDD807A0019B31E /* Img2ColTests.swift in Sources */,
 				B8600CB11DDD88EE0019B31E /* LPPixel.swift in Sources */,
 				CC10A0851DD441D500C1ED90 /* LeptonTests.swift in Sources */,
 				CCEE3C301DDAA83D00524F6F /* LPEngine.swift in Sources */,
+				CC22601E1DDE548F00A7D582 /* SurgeMatrix.swift in Sources */,
+				CC22601F1DDE548F00A7D582 /* SurgePow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
