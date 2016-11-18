@@ -100,18 +100,55 @@ public class LPImageFilter: NSObject {
         return LPMask(height: (radius * 2 + 1), width: (radius * 2 + 1), mask:mask)
     }
     
-    public func acceleratedBlurImageCPU(image:UIImage, kernel:[[Double]]) {
+    public func acceleratedBlurImageCPU(image:UIImage, kernel:[[Float]]) {
         
-        var kernelMatrix = Matrix(kernel)
-        var kernelMatrixB = Matrix(kernel)
-        0
-        var result = kernelMatrix * kernelMatrixB
-        let filterLen = 3
+        
+        //        get pixel data
+        //        get channels
+        //        apply img to col each channel
+        
+        var pixels = RGBA(image: image)!
+        var filter = Matrix<Float>(kernel)
+        let width = pixels.width
+        let height = pixels.height
+        
+        
+        var (red, green, blue) = extractChannels(pixels)
+        let kernelWidth = kernel.count
+        
+        var redColMat = img2col(red, filterLen: kernelWidth)
+        var greenColMat = img2col(green, filterLen: kernel.count)
+        var blueColMat = img2col(blue, filterLen: kernel.count)
+        var filtColMat = filter2col(filter)
+        
+        
+        var redProd = redColMat * filtColMat
+        var greenProd = greenColMat * filtColMat
+        var blueProd = redColMat * filtColMat
+        
+        var redArr = redProd.grid
+        var gArr = greenProd.grid
+        var bArr = blueProd.grid
+        
+        var zeros = [Float](count: width*height, repeatedValue: 0)
+        var TFF = [Float](count: width*height, repeatedValue: 255)
+        
+        var redRes = [Float](count: width*height, repeatedValue: 0)
+        var greRes = [Float](count: width*height, repeatedValue: 0)
+        var BluRes = [Float](count: width*height, repeatedValue: 0)
+        
+        vDSP_vmax(redArr, 1, zeros, 1, &redRes, 1, UInt(width*height))
+        vDSP_vmax(gArr, 1, zeros, 1, &greRes, 1, UInt(width*height))
+        vDSP_vmax(bArr, 1, zeros, 1, &BluRes, 1, UInt(width*height))
+        
+        vDSP_vmin(redRes, 1, TFF, 1, &redRes, 1, UInt(width*height))
+        vDSP_vmin(greRes, 1, TFF, 1, &greRes, 1, UInt(width*height))
+        vDSP_vmin(BluRes, 1, TFF, 1, &BluRes, 1, UInt(width*height))
+        
+        
 
         
-        let d = Matrix<Float>([ [1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0], [9.0, 10.0, 11.0, 12.0], [13.0, 14.0, 15.0, 16.0] ])
         
-        let imgMat = img2col(d, filterLen: filterLen)
     }
     
     public func oneDtoTwoD(oneD:[Float], height:Int, width:Int) -> Matrix<Float>{
