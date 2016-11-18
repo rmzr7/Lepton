@@ -9,11 +9,10 @@
 import Accelerate
 
 
-public func img2col(pixels:[[UInt32]], filter:[[Double]]) -> ([[UInt32]], [[Double]]) {
+public func img2col(channel:[[UInt32]], filterLen:Int) -> ([[UInt32]]) {
     var imgMatrix = [[UInt32]]()
-    let filterLen = filter.count
-    let imageHeight = pixels.count
-    let imageWidth = pixels[0].count
+    let imageHeight = channel.count
+    let imageWidth = channel[0].count
     let radius = filterLen / 2
     for row in 0..<imageHeight {
         for col in 0..<imageWidth {
@@ -25,7 +24,7 @@ public func img2col(pixels:[[UInt32]], filter:[[Double]]) -> ([[UInt32]], [[Doub
             for r in start_y...end_y {
                 for c in start_x...end_x {
                     if r >= 0 && r < imageHeight && c >= 0 && c < imageWidth {
-                        conv.append(pixels[r][c])
+                        conv.append(channel[r][c])
                     } else {
                         conv.append(0)
                     }
@@ -35,18 +34,9 @@ public func img2col(pixels:[[UInt32]], filter:[[Double]]) -> ([[UInt32]], [[Doub
         }
     }
     
-    var filterMatrix = [[Double]]()
-    
-    for y in 0..<filterLen {
-        for x in 0..<filterLen {
-            var filter1d = [Double]()
-            for _ in 0..<imageWidth*imageHeight {
-                filter1d.append(filter[y][x])
-            }
-            filterMatrix.append(filter1d)
-        }
-    }
-    
-    return (imgMatrix, filterMatrix)
+    return imgMatrix
 }
 
+public func convolve(imgcol:[[UInt32]], filter:[[Double]]) -> ([[UInt32]]) {
+    
+}
