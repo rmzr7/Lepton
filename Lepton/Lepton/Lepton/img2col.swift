@@ -13,7 +13,7 @@ public func extractChannels(imageRGBA:RGBA)-> (redMatrix:Matrix<Float>, blueMatr
     
     let width = imageRGBA.width
     let height = imageRGBA.height
-
+        
     var redMatrix = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
     var greenMatrix = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
     var blueMatrix = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)

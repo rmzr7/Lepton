@@ -124,7 +124,7 @@ public class LPImageFilter: NSObject {
         
         var redProd = redColMat * filtColMat
         var greenProd = greenColMat * filtColMat
-        var blueProd = redColMat * filtColMat
+        var blueProd = blueColMat * filtColMat
         
         var redArr = redProd.grid
         var gArr = greenProd.grid
@@ -137,18 +137,27 @@ public class LPImageFilter: NSObject {
         var greRes = [Float](count: width*height, repeatedValue: 0)
         var BluRes = [Float](count: width*height, repeatedValue: 0)
         
-        vDSP_vmax(redArr, 1, zeros, 1, &redRes, 1, UInt(width*height))
-        vDSP_vmax(gArr, 1, zeros, 1, &greRes, 1, UInt(width*height))
-        vDSP_vmax(bArr, 1, zeros, 1, &BluRes, 1, UInt(width*height))
+        let len = UInt(width * height)
         
-        vDSP_vmin(redRes, 1, TFF, 1, &redRes, 1, UInt(width*height))
-        vDSP_vmin(greRes, 1, TFF, 1, &greRes, 1, UInt(width*height))
-        vDSP_vmin(BluRes, 1, TFF, 1, &BluRes, 1, UInt(width*height))
+        vDSP_vmax(redArr, 1, zeros, 1, &redRes, 1, len)
+        vDSP_vmax(gArr, 1, zeros, 1, &greRes, 1, len)
+        vDSP_vmax(bArr, 1, zeros, 1, &BluRes, 1, len)
         
+        vDSP_vmin(redRes, 1, TFF, 1, &redRes, 1, len)
+        vDSP_vmin(greRes, 1, TFF, 1, &greRes, 1, len)
+        vDSP_vmin(BluRes, 1, TFF, 1, &BluRes, 1, len)
         
-
+        var redShift:Float = pow(2.0, 24.0)
+        var greenShift:Float = pow(2.0, 16.0)
+        var blueShift:Float = pow(2.0, 8.0)
+        vDSP_vsmul(redRes, 1, &redShift, &redRes, 1, len)
+        vDSP_vsmul(greRes, 1, &greenShift, &greRes, 1, len)
+        vDSP_vsmul(BluRes, 1, &blueShift, &BluRes, 1, len)
         
+        var res = add(redRes, y: greRes)
+        var res2 = add(res, y: BluRes)
         
+//        col2img(res2, width: width, height: height)
     }
     
     public func oneDtoTwoD(oneD:[Float], height:Int, width:Int) -> Matrix<Float>{
