@@ -38,13 +38,6 @@ public func img2col(channel:Matrix<Float>, filterLen:Int) -> Matrix<Float> {
     let radius = filterLen / 2
     for row in 0..<imageHeight {
         for col in 0..<imageWidth {
-            
-//            let start_x = col - radius
-//            let end_x = col + radius
-//            let start_y = row - radius
-//            let end_y = row + radius
-            
-            
             for r in -1 * radius...radius {
                 for c in -1 * radius...radius {
                     let y = row + r
@@ -58,21 +51,32 @@ public func img2col(channel:Matrix<Float>, filterLen:Int) -> Matrix<Float> {
                     imgMatrix[row * imageWidth + col, (r + radius) * filterLen + (c + radius)] = val
                 }
             }
-            
-//            for r in start_y...end_y {
-//                for c in start_x...end_x {
-//                    var val:Float
-//                    if r >= 0 && r < imageHeight && c >= 0 && c < imageWidth {
-//                        val = channel[r,c]
-//                    } else {
-//                        val = 0.0
-//                    }
-//                    imgMatrix[row * imageWidth + col, (r + radius) * filterLen + (c + radius)] = val
-//                }
-//            }
         }
     }
     
     return imgMatrix
 }
+
+public func filter2col(filter:Matrix<Float>) -> Matrix<Float> {
+    let filterRows = filter.rows
+    var filtMatrix = Matrix<Float>(rows: filterRows * filterRows, columns: 1, repeatedValue: 0)
+    for row in 0..<filtMatrix.rows {
+        let r = row / filterRows
+        let c = row % filterRows
+        filtMatrix[row, 0] = filter[r, c]
+    }
+    return filtMatrix
+}
+
+public func col2img(col:Matrix<Float>, width:Int, height:Int) -> Matrix<Float> {
+    var img = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
+    for r in 0..<height {
+        for c in 0..<width {
+            img[r, c] = col[ r * height + c, 0]
+        }
+    }
+    return img
+}
+
+
 
