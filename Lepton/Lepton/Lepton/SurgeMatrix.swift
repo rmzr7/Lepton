@@ -26,7 +26,7 @@ public enum MatrixAxies {
     case column
 }
 
-public struct Matrix<T> where T: FloatingPoint, T: FloatLiteralConvertible {
+public struct Matrix<T> where T: FloatingPoint, T: ExpressibleByFloatLiteral {
     public typealias Element = T
     
     let rows: Int
@@ -43,12 +43,12 @@ public struct Matrix<T> where T: FloatingPoint, T: FloatLiteralConvertible {
     public init(_ contents: [[Element]]) {
         let m: Int = contents.count
         let n: Int = contents[0].count
-        let repeatedValue: Element = 0.0 
+        let repeatedValue: Element = 0.0
         
         self.init(rows: m, columns: n, repeatedValue: repeatedValue)
         
         for (i, row) in contents.enumerated() {
-            grid.replaceSubrange(i*n..<i*n+min(m, row.count), with: row)
+            grid.replaceSubrange(i*n..<i*n+Swift.min(m, row.count), with: row)
         }
     }
     
