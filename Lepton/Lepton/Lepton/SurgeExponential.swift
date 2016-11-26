@@ -22,44 +22,44 @@
 import Accelerate
 
 // MARK: Exponentiation
-public func exp(x: [Float]) -> [Float] {
-    var results = [Float](count: x.count, repeatedValue: 0.0)
+public func exp(_ x: [Float]) -> [Float] {
+    var results = [Float](repeating: 0.0, count: x.count)
     vvexpf(&results, x, [Int32(x.count)])
     
     return results
 }
 
-public func exp(x: [Double]) -> [Double] {
-    var results = [Double](count: x.count, repeatedValue: 0.0)
+public func exp(_ x: [Double]) -> [Double] {
+    var results = [Double](repeating: 0.0, count: x.count)
     vvexp(&results, x, [Int32(x.count)])
     
     return results
 }
 
 // MARK: Square Exponentiation
-public func exp2(x: [Float]) -> [Float] {
-    var results = [Float](count: x.count, repeatedValue: 0.0)
+public func exp2(_ x: [Float]) -> [Float] {
+    var results = [Float](repeating: 0.0, count: x.count)
     vvexp2f(&results, x, [Int32(x.count)])
     
     return results
 }
 
-public func exp2(x: [Double]) -> [Double] {
-    var results = [Double](count: x.count, repeatedValue: 0.0)
+public func exp2(_ x: [Double]) -> [Double] {
+    var results = [Double](repeating: 0.0, count: x.count)
     vvexp2(&results, x, [Int32(x.count)])
     
     return results
 }
 
 // MARK: Natural Logarithm
-public func log(x: [Float]) -> [Float] {
+public func log(_ x: [Float]) -> [Float] {
     var results = [Float](x)
     vvlogf(&results, x, [Int32(x.count)])
     
     return results
 }
 
-public func log(x: [Double]) -> [Double] {
+public func log(_ x: [Double]) -> [Double] {
     var results = [Double](x)
     vvlog(&results, x, [Int32(x.count)])
     
@@ -67,14 +67,14 @@ public func log(x: [Double]) -> [Double] {
 }
 
 // MARK: Base-2 Logarithm
-public func log2(x: [Float]) -> [Float] {
+public func log2(_ x: [Float]) -> [Float] {
     var results = [Float](x)
     vvlog2f(&results, x, [Int32(x.count)])
     
     return results
 }
 
-public func log2(x: [Double]) -> [Double] {
+public func log2(_ x: [Double]) -> [Double] {
     var results = [Double](x)
     vvlog2(&results, x, [Int32(x.count)])
     
@@ -82,14 +82,14 @@ public func log2(x: [Double]) -> [Double] {
 }
 
 // MARK: Base-10 Logarithm
-public func log10(x: [Float]) -> [Float] {
+public func log10(_ x: [Float]) -> [Float] {
     var results = [Float](x)
     vvlog10f(&results, x, [Int32(x.count)])
     
     return results
 }
 
-public func log10(x: [Double]) -> [Double] {
+public func log10(_ x: [Double]) -> [Double] {
     var results = [Double](x)
     vvlog10(&results, x, [Int32(x.count)])
     
@@ -97,14 +97,14 @@ public func log10(x: [Double]) -> [Double] {
 }
 
 // MARK: Logarithmic Exponentiation
-public func logb(x: [Float]) -> [Float] {
+public func logb(_ x: [Float]) -> [Float] {
     var results = [Float](x)
     vvlogbf(&results, x, [Int32(x.count)])
     
     return results
 }
 
-public func logb(x: [Double]) -> [Double] {
+public func logb(_ x: [Double]) -> [Double] {
     var results = [Double](x)
     vvlogb(&results, x, [Int32(x.count)])
     

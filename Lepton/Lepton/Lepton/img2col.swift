@@ -9,7 +9,7 @@
 import Accelerate
 
 /// Extracting RGB channels from RGBA representation
-public func extractChannels(imageRGBA:RGBA)-> (redMatrix:Matrix<Float>, blueMatrix:Matrix<Float>, greenMatrix:Matrix<Float>) {
+public func extractChannels(_ imageRGBA:RGBA)-> (redMatrix:Matrix<Float>, blueMatrix:Matrix<Float>, greenMatrix:Matrix<Float>) {
     
     let width = imageRGBA.width
     let height = imageRGBA.height
@@ -30,7 +30,7 @@ public func extractChannels(imageRGBA:RGBA)-> (redMatrix:Matrix<Float>, blueMatr
     return (redMatrix, greenMatrix, blueMatrix)
 }
 
-public func img2col(channel:Matrix<Float>, filterLen:Int) -> Matrix<Float> {
+public func img2col(_ channel:Matrix<Float>, filterLen:Int) -> Matrix<Float> {
     
     let imageHeight = channel.rows
     let imageWidth = channel.columns
@@ -57,7 +57,7 @@ public func img2col(channel:Matrix<Float>, filterLen:Int) -> Matrix<Float> {
     return imgMatrix
 }
 
-public func filter2col(filter:Matrix<Float>) -> Matrix<Float> {
+public func filter2col(_ filter:Matrix<Float>) -> Matrix<Float> {
     let filterRows = filter.rows
     var filtMatrix = Matrix<Float>(rows: filterRows * filterRows, columns: 1, repeatedValue: 0)
     for row in 0..<filtMatrix.rows {
@@ -68,7 +68,7 @@ public func filter2col(filter:Matrix<Float>) -> Matrix<Float> {
     return filtMatrix
 }
 
-public func col2img(col:Matrix<Float>, width:Int, height:Int) -> Matrix<Float> {
+public func col2img(_ col:Matrix<Float>, width:Int, height:Int) -> Matrix<Float> {
     var img = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
     for r in 0..<height {
         for c in 0..<width {

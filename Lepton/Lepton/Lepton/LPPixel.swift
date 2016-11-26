@@ -34,7 +34,7 @@ public struct RGBA {
     var height:Int
     
     init? (image:UIImage) {
-        guard let cgImage = image.CGImage else { return nil } // 1
+        guard let cgImage = image.cgImage else { return nil } // 1
         
         width = Int(image.size.width)
         height = Int(image.size.height)
@@ -42,13 +42,13 @@ public struct RGBA {
         
         let bytesPerPixel = 4
         let bytesPerRow = width * bytesPerPixel
-        let imageData = UnsafeMutablePointer<Pixel>.alloc(width * height)
+        let imageData = UnsafeMutablePointer<Pixel>.allocate(capacity: width * height)
         let colorSpace = CGColorSpaceCreateDeviceRGB() // 3
         
-        var bitmapInfo: UInt32 = CGBitmapInfo.ByteOrder32Big.rawValue
-        bitmapInfo |= CGImageAlphaInfo.PremultipliedLast.rawValue & CGBitmapInfo.AlphaInfoMask.rawValue
-        guard let imageContext = CGBitmapContextCreate(imageData, width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo) else { return nil }
-        CGContextDrawImage(imageContext, CGRect(origin: CGPointZero, size: image.size), cgImage) // 4
+        var bitmapInfo: UInt32 = CGBitmapInfo.byteOrder32Big.rawValue
+        bitmapInfo |= CGImageAlphaInfo.premultipliedLast.rawValue & CGBitmapInfo.alphaInfoMask.rawValue
+        guard let imageContext = CGContext(data: imageData, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo) else { return nil }
+        imageContext.draw(cgImage, in: CGRect(origin: CGPoint.zero, size: image.size)) // 4
         
         pixels = UnsafeMutableBufferPointer<Pixel>(start: imageData, count: width * height)
     }
@@ -60,12 +60,12 @@ public struct RGBA {
         let bytesPerRow = width * bytesPerPixel
         let colorSpace = CGColorSpaceCreateDeviceRGB() // 2
         
-        var bitmapInfo: UInt32 = CGBitmapInfo.ByteOrder32Big.rawValue
-        bitmapInfo |= CGImageAlphaInfo.PremultipliedLast.rawValue & CGBitmapInfo.AlphaInfoMask.rawValue
-        let imageContext = CGBitmapContextCreateWithData(pixels.baseAddress, width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo, nil, nil)
-        guard let cgImage = CGBitmapContextCreateImage(imageContext) else {return nil} // 3
+        var bitmapInfo: UInt32 = CGBitmapInfo.byteOrder32Big.rawValue
+        bitmapInfo |= CGImageAlphaInfo.premultipliedLast.rawValue & CGBitmapInfo.alphaInfoMask.rawValue
+        let imageContext = CGContext(data: pixels.baseAddress, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo, releaseCallback: nil, releaseInfo: nil)
+        guard let cgImage = imageContext?.makeImage() else {return nil} // 3
         
-        let image = UIImage(CGImage: cgImage)
+        let image = UIImage(cgImage: cgImage)
         return image
     }
 }

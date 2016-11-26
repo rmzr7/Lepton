@@ -28,12 +28,12 @@ public struct LPMask {
 }
 
 
-public class LPImageFilter: NSObject {
+open class LPImageFilter: NSObject {
     public override init() {
         super.init()
     }
     
-    public func blurImage(image:UIImage, mask:LPMask = LPMask()) -> UIImage? {
+    open func blurImage(_ image:UIImage, mask:LPMask = LPMask()) -> UIImage? {
         
         let pixels = RGBA(image:image)!
         let width = pixels.width
@@ -73,7 +73,7 @@ public class LPImageFilter: NSObject {
     }
 
     
-    public func makeGaussianFilter(radius:Int) -> LPMask {
+    open func makeGaussianFilter(_ radius:Int) -> LPMask {
         let stddev = 1.5
         var mask = [[Double]]()
         let pi = M_PI
@@ -100,7 +100,7 @@ public class LPImageFilter: NSObject {
         return LPMask(height: (radius * 2 + 1), width: (radius * 2 + 1), mask:mask)
     }
     
-    public func acceleratedBlurImageCPU(image:UIImage, kernel:[[Float]]) {
+    open func acceleratedBlurImageCPU(_ image:UIImage, kernel:[[Float]]) {
         
         
         //        get pixel data
@@ -130,12 +130,12 @@ public class LPImageFilter: NSObject {
         var gArr = greenProd.grid
         var bArr = blueProd.grid
         
-        var zeros = [Float](count: width*height, repeatedValue: 0)
-        var TFF = [Float](count: width*height, repeatedValue: 255)
+        var zeros = [Float](repeating: 0, count: width*height)
+        var TFF = [Float](repeating: 255, count: width*height)
         
-        var redRes = [Float](count: width*height, repeatedValue: 0)
-        var greRes = [Float](count: width*height, repeatedValue: 0)
-        var BluRes = [Float](count: width*height, repeatedValue: 0)
+        var redRes = [Float](repeating: 0, count: width*height)
+        var greRes = [Float](repeating: 0, count: width*height)
+        var BluRes = [Float](repeating: 0, count: width*height)
         
         let len = UInt(width * height)
         
@@ -160,7 +160,7 @@ public class LPImageFilter: NSObject {
 //        col2img(res2, width: width, height: height)
     }
     
-    public func oneDtoTwoD(oneD:[Float], height:Int, width:Int) -> Matrix<Float>{
+    open func oneDtoTwoD(_ oneD:[Float], height:Int, width:Int) -> Matrix<Float>{
         var mat = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
         
         for i in 0..<height {

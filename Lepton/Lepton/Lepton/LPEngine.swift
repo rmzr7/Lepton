@@ -13,7 +13,7 @@ class LPEngine: NSObject {
 }
 
 public enum LPMode {
-    case CPUSequential
-    case CPUParallel
-    case GPUParallel
+    case cpuSequential
+    case cpuParallel
+    case gpuParallel
 }
