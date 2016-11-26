@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D0D0C4C1DEA4E96008B35A6 /* LPMetalPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0D0C4B1DEA4E96008B35A6 /* LPMetalPipeline.swift */; };
 		B8600CAE1DDD78DA0019B31E /* img2col.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8600CAD1DDD78DA0019B31E /* img2col.swift */; };
 		B8600CB01DDD807A0019B31E /* Img2ColTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8600CAF1DDD807A0019B31E /* Img2ColTests.swift */; };
 		B8600CB11DDD88EE0019B31E /* LPPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC08BF201DDBCDE600F82684 /* LPPixel.swift */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2D0D0C4B1DEA4E96008B35A6 /* LPMetalPipeline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPMetalPipeline.swift; sourceTree = "<group>"; };
 		B8600CAD1DDD78DA0019B31E /* img2col.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = img2col.swift; sourceTree = "<group>"; };
 		B8600CAF1DDD807A0019B31E /* Img2ColTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Img2ColTests.swift; sourceTree = "<group>"; };
 		CC08BF201DDBCDE600F82684 /* LPPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPPixel.swift; sourceTree = "<group>"; };
@@ -76,6 +78,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D0D0C4A1DEA3275008B35A6 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				2D0D0C4B1DEA4E96008B35A6 /* LPMetalPipeline.swift */,
+			);
+			name = Util;
+			sourceTree = "<group>";
+		};
 		CC10A06B1DD441D500C1ED90 = {
 			isa = PBXGroup;
 			children = (
@@ -97,6 +107,7 @@
 		CC10A0771DD441D500C1ED90 /* Lepton */ = {
 			isa = PBXGroup;
 			children = (
+				2D0D0C4A1DEA3275008B35A6 /* Util */,
 				CCB2FFB91DDD7AD7005A297C /* Lib */,
 				CC10A0781DD441D500C1ED90 /* Lepton.h */,
 				CCEE3C2E1DDAA83D00524F6F /* LPEngine.swift */,
@@ -241,6 +252,7 @@
 				CC22601B1DDE545B00A7D582 /* SurgeArithmetic.swift in Sources */,
 				CCEE3C2F1DDAA83D00524F6F /* LPEngine.swift in Sources */,
 				B8600CAE1DDD78DA0019B31E /* img2col.swift in Sources */,
+				2D0D0C4C1DEA4E96008B35A6 /* LPMetalPipeline.swift in Sources */,
 				CC08BF211DDBCDE600F82684 /* LPPixel.swift in Sources */,
 				CCB2FFC11DDD7C0C005A297C /* SurgePow.swift in Sources */,
 				CCEE3C321DDAA8C600524F6F /* LPImageFilter.swift in Sources */,

@@ -8,7 +8,7 @@
 
 import UIKit
 import Accelerate
-
+import Metal
 
 public struct LPMask {
     var height = 0
@@ -107,31 +107,31 @@ open class LPImageFilter: NSObject {
         //        get channels
         //        apply img to col each channel
         
-        var pixels = RGBA(image: image)!
-        var filter = Matrix<Float>(kernel)
+        let pixels = RGBA(image: image)!
+        let filter = Matrix<Float>(kernel)
         let width = pixels.width
         let height = pixels.height
         
         
-        var (red, green, blue) = extractChannels(pixels)
+        let (red, green, blue) = extractChannels(pixels)
         let kernelWidth = kernel.count
         
-        var redColMat = img2col(red, filterLen: kernelWidth)
-        var greenColMat = img2col(green, filterLen: kernel.count)
-        var blueColMat = img2col(blue, filterLen: kernel.count)
-        var filtColMat = filter2col(filter)
+        let redColMat = img2col(red, filterLen: kernelWidth)
+        let greenColMat = img2col(green, filterLen: kernel.count)
+        let blueColMat = img2col(blue, filterLen: kernel.count)
+        let filtColMat = filter2col(filter)
         
         
-        var redProd = redColMat * filtColMat
-        var greenProd = greenColMat * filtColMat
-        var blueProd = blueColMat * filtColMat
+        let redProd = redColMat * filtColMat
+        let greenProd = greenColMat * filtColMat
+        let blueProd = blueColMat * filtColMat
         
-        var redArr = redProd.grid
-        var gArr = greenProd.grid
-        var bArr = blueProd.grid
+        let redArr = redProd.grid
+        let gArr = greenProd.grid
+        let bArr = blueProd.grid
         
-        var zeros = [Float](repeating: 0, count: width*height)
-        var TFF = [Float](repeating: 255, count: width*height)
+        let zeros = [Float](repeating: 0, count: width*height)
+        let TFF = [Float](repeating: 255, count: width*height)
         
         var redRes = [Float](repeating: 0, count: width*height)
         var greRes = [Float](repeating: 0, count: width*height)
@@ -158,6 +158,19 @@ open class LPImageFilter: NSObject {
         var res2 = add(res, y: BluRes)
         
 //        col2img(res2, width: width, height: height)
+    }
+    
+    open func acceleratedImageBlurGPU() {
+        guard let device = MTLCreateSystemDefaultDevice() else {
+            print("no GPU, aborting");
+            return;
+        }
+        
+//        Synchronous
+//        device.newComputePipelineStateWithFunction
+//        newComputePipelineStateWithFunction()
+        
+        
     }
     
     open func oneDtoTwoD(_ oneD:[Float], height:Int, width:Int) -> Matrix<Float>{
