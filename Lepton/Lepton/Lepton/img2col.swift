@@ -30,6 +30,26 @@ public func extractChannels(_ imageRGBA:RGBA)-> (redMatrix:Matrix<Float>, blueMa
     return (redMatrix, greenMatrix, blueMatrix)
 }
 
+public func combineChannels(_ imageRGBA:RGBA, redValues:[UInt8], greenValues:[UInt8], blueValues:[UInt8]) -> RGBA {
+    
+    let width = imageRGBA.width
+    let height = imageRGBA.height
+    let pixels = imageRGBA.pixels
+    
+    for y in 0..<height {
+        for x in 0..<width {
+            let idx = y*width + x
+            var pixel = pixels[idx]
+            pixel.red = redValues[idx]
+            pixel.green = greenValues[idx]
+            pixel.blue = blueValues[idx]
+        }
+    }
+    
+    return imageRGBA
+}
+
+
 public func img2col(_ channel:Matrix<Float>, filterLen:Int) -> Matrix<Float> {
     
     let imageHeight = channel.rows
@@ -68,14 +88,14 @@ public func filter2col(_ filter:Matrix<Float>) -> Matrix<Float> {
     return filtMatrix
 }
 
-public func col2img(_ col:Matrix<Float>, width:Int, height:Int) -> Matrix<Float> {
+public func col2img(_ col:[Float], width:Int, height:Int) -> [Float] {
     var img = Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
     for r in 0..<height {
         for c in 0..<width {
-            img[r, c] = col[ r * height + c, 0]
+            img[r, c] = col[ r * height + c ]
         }
     }
-    return img
+    return img.grid
 }
 
 
