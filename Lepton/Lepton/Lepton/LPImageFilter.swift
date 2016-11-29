@@ -74,11 +74,11 @@ open class LPImageFilter: NSObject {
 
     
     open func makeGaussianFilter(_ radius:Int) -> LPMask {
-        let stddev = Float(1.5)
-        let stddev_squared_times_2 = Float(2) * stddev * stddev
+        let stddev:Float = 1.5
+        let stddev_squared_times_2:Float = 2.0 * stddev * stddev
         var mask = [[Float]]()
-        let pi = Float(M_PI)
-        let e = Float(2.78)
+        let pi:Float = Float(M_PI)
+        let e:Float = 2.78
         var sum:Float = 0.0
         for y in -1 * radius...radius {
             let float_y = Float(y)
@@ -88,7 +88,7 @@ open class LPImageFilter: NSObject {
                 let float_x = Float(x)
                 let x_squared = float_x * float_x
                 let exp = -1.0 * (x_squared + y_squared) / stddev_squared_times_2
-                let val = 1/(pi * stddev_squared_times_2) * pow(e, exp)
+                let val = 1.0/(pi * stddev_squared_times_2) * pow(e, exp)
                 row.append( val )
                 sum += val
             }
@@ -103,56 +103,68 @@ open class LPImageFilter: NSObject {
         return LPMask(height: (radius * 2 + 1), width: (radius * 2 + 1), mask:mask)
     }
     
-    open func acceleratedBlurImageCPU(_ image:UIImage, kernel:[[Float]]) -> UIImage? {
+    open func acceleratedBlurImageCPU(_ image:UIImage, mask:LPMask = LPMask()) -> UIImage? {
         
         
-        //        get pixel data
-        //        get channels
-        //        apply img to col each channel
-        
+        // 0. Get pixel data
         let pixels = RGBA(image: image)!
-        let filter = Matrix<Float>(kernel)
-        let width = pixels.width
-        let height = pixels.height
+        let kernel = mask.mask!
+        let filterLen = mask.height
+        let filter = Matrix<Float>(kernel).grid
+        let imageWidth = pixels.width
+        let imageHeight = pixels.height
         
-        
+        // 1. Split into channels
         var (red, green, blue) = extractChannels(pixels)
-        let kernelWidth = kernel.count
         
-        var redColMat = img2col(red, filterLen: kernelWidth)
-        var greenColMat = img2col(green, filterLen: kernel.count)
-        var blueColMat = img2col(blue, filterLen: kernel.count)
-        var filtColMat = filter2col(filter)
+        // 2. Convolve each channel
+        vDSP_imgfir(red, vDSP_Length(imageHeight), vDSP_Length(imageWidth), filter, &red, vDSP_Length(filterLen), vDSP_Length(filterLen))
+        vDSP_imgfir(green, vDSP_Length(imageHeight), vDSP_Length(imageWidth), filter, &green, vDSP_Length(filterLen), vDSP_Length(filterLen))
+        vDSP_imgfir(blue, vDSP_Length(imageHeight), vDSP_Length(imageWidth), filter, &blue, vDSP_Length(filterLen), vDSP_Length(filterLen))
+        
+        //let kernelWidth = kernel.count
+        
+        /*let red = addPadding(&unpaddedred, filterRadius:filterLen)
+        let green = addPadding(&unpaddedgreen, filterRadius:filterLen)
+        let blue = addPadding(&unpaddedblue, filterRadius:filterLen)
+        
+        let redColMat = img2col(red, filterLen: kernelWidth)
+        let greenColMat = img2col(green, filterLen: kernelWidth)
+        let blueColMat = img2col(blue, filterLen: kernelWidth)
+        let filtColMat = filter2col(filter)
         
         
-        var redProd = redColMat * filtColMat
-        var greenProd = greenColMat * filtColMat
-        var blueProd = blueColMat * filtColMat
+        let redProd = redColMat * filtColMat
+        let greenProd = greenColMat * filtColMat
+        let blueProd = blueColMat * filtColMat
         
         var redArr = redProd.grid
         var gArr = greenProd.grid
-        var bArr = blueProd.grid
+        var bArr = blueProd.grid*/
         
-        var zeros = [Float](repeating: 0.0, count: width*height)
-        var TFF = [Float](repeating: 255.0, count: width*height)
+        // 3. Clamp the values
+        let len = imageWidth * imageHeight
+        let zeros = [Float](repeating: 0.0, count: len)
+        let TFF = [Float](repeating: 255.0, count: len)
         
-        let len = UInt(width * height)
+        let unsigned_len = UInt(len)
         
-        vDSP_vmax(redArr, 1, zeros, 1, &redArr, 1, len)
-        vDSP_vmax(gArr, 1, zeros, 1, &gArr, 1, len)
-        vDSP_vmax(bArr, 1, zeros, 1, &bArr, 1, len)
+        vDSP_vmax(red, 1, zeros, 1, &red, 1, unsigned_len)
+        vDSP_vmax(green, 1, zeros, 1, &green, 1, unsigned_len)
+        vDSP_vmax(blue, 1, zeros, 1, &blue, 1, unsigned_len)
         
-        vDSP_vmin(redArr, 1, TFF, 1, &redArr, 1, len)
-        vDSP_vmin(gArr, 1, TFF, 1, &gArr, 1, len)
-        vDSP_vmin(bArr, 1, TFF, 1, &bArr, 1, len)
+        vDSP_vmin(red, 1, TFF, 1, &red, 1, unsigned_len)
+        vDSP_vmin(green, 1, TFF, 1, &green, 1, unsigned_len)
+        vDSP_vmin(blue, 1, TFF, 1, &blue, 1, unsigned_len)
         
-        var redRes = [UInt8](repeating: 0, count: width*height)
-        var greRes = [UInt8](repeating: 0, count: width*height)
-        var BluRes = [UInt8](repeating: 0, count: width*height)
+        // 4. Convert the values back to integers
+        var redRes = [UInt8](repeating: 0, count: len)
+        var greenRes = [UInt8](repeating: 0, count: len)
+        var blueRes = [UInt8](repeating: 0, count: len)
         
-        vDSP_vfixu8(redArr, 1, &redRes, 1, len)
-        vDSP_vfixu8(gArr, 1, &greRes, 1, len)
-        vDSP_vfixu8(bArr, 1, &BluRes, 1, len)
+        vDSP_vfixu8(red, 1, &redRes, 1, unsigned_len)
+        vDSP_vfixu8(green, 1, &greenRes, 1, unsigned_len)
+        vDSP_vfixu8(blue, 1, &blueRes, 1, unsigned_len)
         
         /*var redShift:Float = pow(2.0, 24.0)
         var greenShift:Float = pow(2.0, 16.0)
@@ -164,7 +176,8 @@ open class LPImageFilter: NSObject {
         var res = add(redRes, y: greRes)
         var res2 = add(res, y: BluRes)*/
         
-        return combineChannels(pixels, redValues: redRes, greenValues: greRes, blueValues: BluRes).toUIImage()
+        // 5. Combine the channels and return the result
+        return combineChannels(pixels, redValues: redRes, greenValues: greenRes, blueValues: blueRes).toUIImage()
         
         //return col2img(res2, width: width, height: height).toUIImage()
     }
