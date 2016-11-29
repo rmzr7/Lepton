@@ -13,9 +13,9 @@ import Metal
 public struct LPMask {
     var height = 0
     var width = 0
-    var mask:[[Double]]!
+    public var mask:[[Float]]!
     
-    init(height:Int=3, width:Int=3, mask:[[Double]] = [
+    init(height:Int=3, width:Int=3, mask:[[Float]] = [
         [0.2, 0.2, 0.0],
         [0.2, 0.2, 0.2],
         [0.0, 0.2, 0.0]
@@ -38,12 +38,12 @@ open class LPImageFilter: NSObject {
         let pixels = RGBA(image:image)!
         let width = pixels.width
         let height = pixels.height
-        let factor = 1.0
-        let bias = 0.0
+        let factor:Float = 1.0
+        let bias:Float = 0.0
         for y in 0..<pixels.height {
             for x in 0..<pixels.width {
                 let idx = y*pixels.width+x
-                var red = 0.0, green = 0.0, blue = 0.0
+                var red:Float = 0.0, green:Float = 0.0, blue:Float = 0.0
 
 
                 for fy in 0..<mask.height {
@@ -51,9 +51,9 @@ open class LPImageFilter: NSObject {
                         let imageX:Int = (x - mask.width / 2 + fx + pixels.width) % width
                         let imageY:Int = (y - mask.height / 2 + fy + pixels.height) % height
                         let pixel = pixels.pixels[(imageY * width + imageX)]
-                        red += Double(pixel.red) * mask.mask[fy][fx]
-                        green += Double(pixel.green) * mask.mask[fy][fx]
-                        blue += Double(pixel.blue) * mask.mask[fy][fx]
+                        red += Float(pixel.red) * mask.mask[fy][fx]
+                        green += Float(pixel.green) * mask.mask[fy][fx]
+                        blue += Float(pixel.blue) * mask.mask[fy][fx]
                     }
                 }
                 
@@ -74,18 +74,21 @@ open class LPImageFilter: NSObject {
 
     
     open func makeGaussianFilter(_ radius:Int) -> LPMask {
-        let stddev = 1.5
-        var mask = [[Double]]()
-        let pi = M_PI
-        let e = 2.78
-        var sum = 0.0
+        let stddev = Float(1.5)
+        let stddev_squared_times_2 = Float(2) * stddev * stddev
+        var mask = [[Float]]()
+        let pi = Float(M_PI)
+        let e = Float(2.78)
+        var sum:Float = 0.0
         for y in -1 * radius...radius {
-            let double_y = Double(y)
-            var row = [Double]()
+            let float_y = Float(y)
+            let y_squared = float_y * float_y
+            var row = [Float]()
             for x in -1 * radius...radius {
-                let double_x = Double(x)
-                let exp = -1 * (double_x * double_x + double_y * double_y) / (2 * stddev * stddev)
-                let val = 1/(2 * pi * stddev * stddev) * pow(e, exp)
+                let float_x = Float(x)
+                let x_squared = float_x * float_x
+                let exp = -1.0 * (x_squared + y_squared) / stddev_squared_times_2
+                let val = 1/(pi * stddev_squared_times_2) * pow(e, exp)
                 row.append( val )
                 sum += val
             }
@@ -100,12 +103,13 @@ open class LPImageFilter: NSObject {
         return LPMask(height: (radius * 2 + 1), width: (radius * 2 + 1), mask:mask)
     }
     
-    open func acceleratedBlurImageCPU(_ image:UIImage, kernel:[[Float]]) {
-        
+    open func acceleratedBlurImageCPU(_ image:UIImage, mask:LPMask = LPMask()) -> UIImage? {
         
         //        get pixel data
         //        get channels
         //        apply img to col each channel
+        
+        let kernel = mask.mask!
         
         let pixels = RGBA(image: image)!
         let filter = Matrix<Float>(kernel)
@@ -116,38 +120,47 @@ open class LPImageFilter: NSObject {
         let (red, green, blue) = extractChannels(pixels)
         let kernelWidth = kernel.count
         
-        let redColMat = img2col(red, filterLen: kernelWidth)
-        let greenColMat = img2col(green, filterLen: kernel.count)
-        let blueColMat = img2col(blue, filterLen: kernel.count)
-        let filtColMat = filter2col(filter)
+//        let redColMat = img2col(red, filterLen: kernelWidth)
+//        let greenColMat = img2col(green, filterLen: kernel.count)
+//        let blueColMat = img2col(blue, filterLen: kernel.count)
+//        let filtColMat = filter2col(filter)
+
+        let redColMat = Matrix<Float>(rows: red.rows * red.columns, columns: kernelWidth*kernelWidth, repeatedValue: 0)
+        let greenColMat = Matrix<Float>(rows: red.rows * red.columns, columns: kernelWidth*kernelWidth, repeatedValue: 0)
+        let blueColMat = Matrix<Float>(rows: red.rows * red.columns, columns: kernelWidth*kernelWidth, repeatedValue: 0)
+        let filtColMat = Matrix<Float>(rows: filter.rows*filter.rows, columns: 1, repeatedValue: 0)
         
         
         let redProd = redColMat * filtColMat
         let greenProd = greenColMat * filtColMat
         let blueProd = blueColMat * filtColMat
         
-        let redArr = redProd.grid
-        let gArr = greenProd.grid
-        let bArr = blueProd.grid
+        var redArr = redProd.grid
+        var gArr = greenProd.grid
+        var bArr = blueProd.grid
         
-        let zeros = [Float](repeating: 0, count: width*height)
-        let TFF = [Float](repeating: 255, count: width*height)
-        
-        var redRes = [Float](repeating: 0, count: width*height)
-        var greRes = [Float](repeating: 0, count: width*height)
-        var BluRes = [Float](repeating: 0, count: width*height)
+        var zeros = [Float](repeating: 0.0, count: width*height)
+        var TFF = [Float](repeating: 255.0, count: width*height)
         
         let len = UInt(width * height)
         
-        vDSP_vmax(redArr, 1, zeros, 1, &redRes, 1, len)
-        vDSP_vmax(gArr, 1, zeros, 1, &greRes, 1, len)
-        vDSP_vmax(bArr, 1, zeros, 1, &BluRes, 1, len)
+        vDSP_vmax(redArr, 1, zeros, 1, &redArr, 1, len)
+        vDSP_vmax(gArr, 1, zeros, 1, &gArr, 1, len)
+        vDSP_vmax(bArr, 1, zeros, 1, &bArr, 1, len)
         
-        vDSP_vmin(redRes, 1, TFF, 1, &redRes, 1, len)
-        vDSP_vmin(greRes, 1, TFF, 1, &greRes, 1, len)
-        vDSP_vmin(BluRes, 1, TFF, 1, &BluRes, 1, len)
+        vDSP_vmin(redArr, 1, TFF, 1, &redArr, 1, len)
+        vDSP_vmin(gArr, 1, TFF, 1, &gArr, 1, len)
+        vDSP_vmin(bArr, 1, TFF, 1, &bArr, 1, len)
         
-        var redShift:Float = pow(2.0, 24.0)
+        var redRes = [UInt8](repeating: 0, count: width*height)
+        var greRes = [UInt8](repeating: 0, count: width*height)
+        var BluRes = [UInt8](repeating: 0, count: width*height)
+        
+        vDSP_vfixu8(redArr, 1, &redRes, 1, len)
+        vDSP_vfixu8(gArr, 1, &greRes, 1, len)
+        vDSP_vfixu8(bArr, 1, &BluRes, 1, len)
+        
+        /*var redShift:Float = pow(2.0, 24.0)
         var greenShift:Float = pow(2.0, 16.0)
         var blueShift:Float = pow(2.0, 8.0)
         vDSP_vsmul(redRes, 1, &redShift, &redRes, 1, len)
@@ -155,9 +168,9 @@ open class LPImageFilter: NSObject {
         vDSP_vsmul(BluRes, 1, &blueShift, &BluRes, 1, len)
         
         var res = add(redRes, y: greRes)
-        var res2 = add(res, y: BluRes)
+        var res2 = add(res, y: BluRes)*/
         
-//        col2img(res2, width: width, height: height)
+        return combineChannels(pixels, redValues: redRes, greenValues: greRes, blueValues: BluRes).toUIImage()
     }
     
     open func acceleratedImageBlurGPU() {
