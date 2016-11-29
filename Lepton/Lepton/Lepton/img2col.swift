@@ -51,6 +51,7 @@ public func combineChannels(_ imageRGBA:RGBA, redValues:[UInt8], greenValues:[UI
         pixel.red = redValues[idx]
         pixel.green = greenValues[idx]
         pixel.blue = blueValues[idx]
+        pixels[idx] = pixel
     }
     
     return imageRGBA
