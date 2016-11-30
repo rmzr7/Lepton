@@ -152,7 +152,21 @@ open class LPImageFilter: NSObject {
         return combineChannels(pixels, redValues: redRes, greenValues: greenRes, blueValues: blueRes).toUIImage()
     }
     
-    open func acceleratedImageBlurGPU() {
+    open func acceleratedImageBlurGPU(_ image:UIImage, mask:LPMask = LPMask()) {
+        guard let device = MTLCreateSystemDefaultDevice() else {
+            fatalError("no GPU, aborting");
+            return;
+        }
+        var metalContext = LPMetalPipeline(device: device)
+        
+        let pixels = LPImage(image:image)!
+        var imageTexture = metalContext.textureForImage(pixels)!
+        
+        var maskTexture = metalContext.textureForMask(mask)
+        
+        
+        
+        
         
     }
     
