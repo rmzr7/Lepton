@@ -28,6 +28,8 @@ public struct LPMask {
 }
 
 
+
+
 open class LPImageFilter: NSObject {
     public override init() {
         super.init()
@@ -77,8 +79,8 @@ open class LPImageFilter: NSObject {
         let stddev:Float = 1.5
         let stddev_squared_times_2:Float = 2.0 * stddev * stddev
         var mask = [[Float]]()
-        let pi:Float = Float(M_PI)
-        let e:Float = 2.78
+        let pi = Float(M_PI)
+        let e = Float(M_E)
         var sum:Float = 0.0
         for y in -1 * radius...radius {
             let float_y = Float(y)
