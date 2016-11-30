@@ -9,12 +9,11 @@
 import Foundation
 import Metal
 
-class MetalPipeline {
+class LPMetalPipeline {
     var device:MTLDevice
     var library:MTLLibrary?
     
     let commandQueue:MTLCommandQueue
-//    let pipelineState:MTLComputePipelineState
     
     init(device:MTLDevice) {
         self.device = device
@@ -52,7 +51,6 @@ class MetalPipeline {
         return maskTexture
         
     }
-}
-public func createComputePipeline(functionName:String) {
-//    let functionName = MTLDevice.newFunctionWithName(name)
+    
+
 }
