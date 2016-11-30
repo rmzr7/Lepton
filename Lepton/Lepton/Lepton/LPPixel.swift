@@ -28,7 +28,7 @@ struct Pixel {
     }
 }
 
-public struct RGBA {
+public struct LPImage {
     var pixels:UnsafeMutableBufferPointer<Pixel>
     var width:Int
     var height:Int

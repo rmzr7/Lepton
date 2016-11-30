@@ -13,7 +13,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let image = UIImage(named: "city")
+        let image = UIImage(named: "SeaSideSmall")
         
         let lepton = LPImageFilter()
         let gaussian3 = lepton.makeGaussianFilter(3)

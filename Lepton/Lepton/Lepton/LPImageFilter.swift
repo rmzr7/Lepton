@@ -8,7 +8,7 @@
 
 import UIKit
 import Accelerate
-
+import Metal
 
 public struct LPMask {
     var height = 0
@@ -35,7 +35,7 @@ open class LPImageFilter: NSObject {
     
     open func blurImage(_ image:UIImage, mask:LPMask = LPMask()) -> UIImage? {
         
-        let pixels = RGBA(image:image)!
+        let pixels = LPImage(image:image)!
         let width = pixels.width
         let height = pixels.height
         let factor:Float = 1.0
@@ -107,7 +107,7 @@ open class LPImageFilter: NSObject {
         
         
         // 0. Get pixel data
-        let pixels = RGBA(image: image)!
+        let pixels = LPImage(image: image)!
         let kernel = mask.mask!
         let filterLen = mask.height
         let filter = Matrix<Float>(kernel).grid
@@ -148,6 +148,10 @@ open class LPImageFilter: NSObject {
         
         // 5. Combine the channels and return the result
         return combineChannels(pixels, redValues: redRes, greenValues: greenRes, blueValues: blueRes).toUIImage()
+    }
+    
+    open func acceleratedImageBlurGPU() {
+        
     }
     
     open func oneDtoTwoD(_ oneD:[Float], height:Int, width:Int) -> Matrix<Float>{

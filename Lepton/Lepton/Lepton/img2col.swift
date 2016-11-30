@@ -9,7 +9,7 @@
 import Accelerate
 
 /// Extracting RGB channels from RGBA representation
-public func extractChannels(_ imageRGBA:RGBA)-> (redMatrix: [Float], greenMatrix: [Float], blueMatrix: [Float])
+public func extractChannels(_ imageRGBA:LPImage)-> (redMatrix: [Float], greenMatrix: [Float], blueMatrix: [Float])
 {
     
     let width = imageRGBA.width
@@ -29,7 +29,7 @@ public func extractChannels(_ imageRGBA:RGBA)-> (redMatrix: [Float], greenMatrix
     return (redMatrix, greenMatrix, blueMatrix)
 }
 
-public func combineChannels(_ imageRGBA:RGBA, redValues:[UInt8], greenValues:[UInt8], blueValues:[UInt8]) -> RGBA {
+public func combineChannels(_ imageRGBA:LPImage, redValues:[UInt8], greenValues:[UInt8], blueValues:[UInt8]) -> LPImage {
     
     let width = imageRGBA.width
     let height = imageRGBA.height
