@@ -10,15 +10,14 @@ import Accelerate
 
 /// Extracting RGB channels from RGBA representation
 public func extractChannels(_ imageRGBA:RGBA)-> (redMatrix: [Float], greenMatrix: [Float], blueMatrix: [Float])
-    //(redMatrix:Matrix<Float>, blueMatrix:Matrix<Float>, greenMatrix:Matrix<Float>)
 {
     
     let width = imageRGBA.width
     let height = imageRGBA.height
         
-    var redMatrix = [Float](repeating: 0.0, count: width*height)//Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
-    var greenMatrix = [Float](repeating: 0.0, count: width*height)//Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
-    var blueMatrix = [Float](repeating: 0.0, count: width*height)//Matrix<Float>(rows: height, columns: width, repeatedValue: 0)
+    var redMatrix = [Float](repeating: 0.0, count: width*height)
+    var greenMatrix = [Float](repeating: 0.0, count: width*height)
+    var blueMatrix = [Float](repeating: 0.0, count: width*height)
     
     for idx in 0..<height * width {
         let pixel = imageRGBA.pixels[idx]
@@ -26,16 +25,6 @@ public func extractChannels(_ imageRGBA:RGBA)-> (redMatrix: [Float], greenMatrix
         greenMatrix[idx] = Float(pixel.green)
         blueMatrix[idx] = Float(pixel.blue)
     }
-    
-    /*for y in 0..<height {
-        for x in 0..<width {
-            let idx = y*width + x
-            let pixel = imageRGBA.pixels[idx]
-            redMatrix[idx] = Float(pixel.red)
-            greenMatrix[idx] = Float(pixel.green)
-            blueMatrix[idx] = Float(pixel.blue)
-        }
-    }*/
     
     return (redMatrix, greenMatrix, blueMatrix)
 }
@@ -56,19 +45,6 @@ public func combineChannels(_ imageRGBA:RGBA, redValues:[UInt8], greenValues:[UI
     
     return imageRGBA
 }
-
-/*public func addPadding(_ channel:inout Matrix<Float>, filterRadius: Int) -> Matrix<Float> {
-    let h = channel.rows
-    let w = channel.columns
-    let padding = 2 * filterRadius
-    let paddedMatrixHeight = h + padding
-    let paddedMatrixWidth = w + padding
-    var paddedMatrix = Matrix<Float>(rows: paddedMatrixHeight, columns: paddedMatrixWidth, repeatedValue: 0)
-    for row in 0..<h {
-        vDSP_mmov(&channel[row, 0], &paddedMatrix[row + filterRadius, filterRadius], vDSP_Length(w), 1, vDSP_Length(w), vDSP_Length(paddedMatrixWidth))
-    }
-    return paddedMatrix
-}*/
 
 /*public func img2col(_ channel:Matrix<Float>, filterLen:Int) -> Matrix<Float> {
     

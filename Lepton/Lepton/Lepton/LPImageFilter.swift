@@ -122,26 +122,6 @@ open class LPImageFilter: NSObject {
         vDSP_imgfir(green, vDSP_Length(imageHeight), vDSP_Length(imageWidth), filter, &green, vDSP_Length(filterLen), vDSP_Length(filterLen))
         vDSP_imgfir(blue, vDSP_Length(imageHeight), vDSP_Length(imageWidth), filter, &blue, vDSP_Length(filterLen), vDSP_Length(filterLen))
         
-        //let kernelWidth = kernel.count
-        
-        /*let red = addPadding(&unpaddedred, filterRadius:filterLen)
-        let green = addPadding(&unpaddedgreen, filterRadius:filterLen)
-        let blue = addPadding(&unpaddedblue, filterRadius:filterLen)
-        
-        let redColMat = img2col(red, filterLen: kernelWidth)
-        let greenColMat = img2col(green, filterLen: kernelWidth)
-        let blueColMat = img2col(blue, filterLen: kernelWidth)
-        let filtColMat = filter2col(filter)
-        
-        
-        let redProd = redColMat * filtColMat
-        let greenProd = greenColMat * filtColMat
-        let blueProd = blueColMat * filtColMat
-        
-        var redArr = redProd.grid
-        var gArr = greenProd.grid
-        var bArr = blueProd.grid*/
-        
         // 3. Clamp the values
         let len = imageWidth * imageHeight
         let zeros = [Float](repeating: 0.0, count: len)
@@ -166,20 +146,8 @@ open class LPImageFilter: NSObject {
         vDSP_vfixu8(green, 1, &greenRes, 1, unsigned_len)
         vDSP_vfixu8(blue, 1, &blueRes, 1, unsigned_len)
         
-        /*var redShift:Float = pow(2.0, 24.0)
-        var greenShift:Float = pow(2.0, 16.0)
-        var blueShift:Float = pow(2.0, 8.0)
-        vDSP_vsmul(redRes, 1, &redShift, &redRes, 1, len)
-        vDSP_vsmul(greRes, 1, &greenShift, &greRes, 1, len)
-        vDSP_vsmul(BluRes, 1, &blueShift, &BluRes, 1, len)
-        
-        var res = add(redRes, y: greRes)
-        var res2 = add(res, y: BluRes)*/
-        
         // 5. Combine the channels and return the result
         return combineChannels(pixels, redValues: redRes, greenValues: greenRes, blueValues: blueRes).toUIImage()
-        
-        //return col2img(res2, width: width, height: height).toUIImage()
     }
     
     open func oneDtoTwoD(_ oneD:[Float], height:Int, width:Int) -> Matrix<Float>{
