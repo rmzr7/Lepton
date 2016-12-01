@@ -9,7 +9,10 @@
 #include <metal_stdlib>
 using namespace metal;
 
-kernel void gaussian_filter(texture2d<int, access::read> inTexture [[texture(0)]], texture2d<float, access::read> mask [[texture(1)]], texture2d<int, access:write> outTexture [[texture(2)]], bid [[thread_position_in_grid]] ) {
+kernel void gaussian_filter(texture2d<int, access::read> inTexture [[texture(0)]],
+                            texture2d<float, access::read> mask [[texture(1)]],
+                            texture2d<int, access:write> outTexture [[texture(2)]],
+                            bid [[thread_position_in_grid]] ) {
     int width = mask.get_width();
     int radius = width/2;
     

@@ -75,9 +75,9 @@ open class LPImageFilter: NSObject {
     }
 
     
-    open func makeGaussianFilter(_ radius:Int) -> LPMask {
-        let stddev:Float = 1.5
-        let stddev_squared_times_2:Float = 2.0 * stddev * stddev
+    open func makeGaussianFilter(_ sigma:Float) -> LPMask {
+        let radius = Int(3.0 * sigma)
+        let two_sigma_squared:Float = 2.0 * sigma * sigma
         var mask = [[Float]]()
         let pi = Float(M_PI)
         let e = Float(M_E)
@@ -89,8 +89,8 @@ open class LPImageFilter: NSObject {
             for x in -1 * radius...radius {
                 let float_x = Float(x)
                 let x_squared = float_x * float_x
-                let exp = -1.0 * (x_squared + y_squared) / stddev_squared_times_2
-                let val = 1.0/(pi * stddev_squared_times_2) * pow(e, exp)
+                let exp = -1.0 * (x_squared + y_squared) / two_sigma_squared
+                let val = 1.0/(pi * two_sigma_squared) * pow(e, exp)
                 row.append( val )
                 sum += val
             }
@@ -152,19 +152,18 @@ open class LPImageFilter: NSObject {
         return combineChannels(pixels, redValues: redRes, greenValues: greenRes, blueValues: blueRes).toUIImage()
     }
     
-    open func acceleratedImageBlurGPU(_ image:UIImage, mask:LPMask = LPMask()) {
+    open func acceleratedImageBlurGPU(_ image:UIImage, mask:LPMask = LPMask()) -> UIImage? {
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("no GPU, aborting");
             return;
         }
-        var metalContext = LPMetalPipeline(device: device)
+        let img = LPImage(image:image)!
+        var metalContext = LPMetalContext(device: device)
+        var imageTexture = metalContext.imageToMetalTexture(image:img)!
+        var maskTexture = metalContext.maskToMetalTexture(mask: mask)
         
-        let pixels = LPImage(image:image)!
-        var imageTexture = metalContext.textureForImage(pixels)!
-        
-        var maskTexture = metalContext.textureForMask(mask)
-        
-        
+        var gpufilter = LPGPUImageFilter(function: "gaussian_filter", metalContext: metalContext)
+        var outputTexture = gpufilter.applyFilter(inputTexture: imageTexture, withFilter: maskTexture)
         
         
         
