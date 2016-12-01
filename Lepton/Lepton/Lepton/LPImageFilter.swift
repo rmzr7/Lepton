@@ -158,9 +158,9 @@ open class LPImageFilter: NSObject {
         var metalContext = LPMetalPipeline(device: device)
         
         let pixels = LPImage(image:image)!
-        var imageTexture = metalContext.textureForImage(pixels)!
+        var imageTexture = metalContext.textureForImage(image: pixels)!
         
-        var maskTexture = metalContext.textureForMask(mask)
+        var maskTexture = metalContext.textureForMask(mask: mask)
         
         
         

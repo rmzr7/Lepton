@@ -30,7 +30,6 @@ class LPGPUImageFilter {
         var outputDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Uint, width: width, height: height, mipmapped: false)
         var outputTexture = MTLTextureDescriptor
 
-        
         var threadGroupCounts = MTLSizeMake(8,8,1)
         var threadGroups = MTLSizeMake(inputTexture.width/threadGroupCounts.width, inputTexture.height/threadGroupCounts.height, 1);
         

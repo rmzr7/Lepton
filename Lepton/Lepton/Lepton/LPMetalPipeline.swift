@@ -34,7 +34,7 @@ class LPMetalPipeline {
             return nil
         }
         
-        let bytesPerRow = MemoryLayout<Pixel>.size*width
+        let bytesPerRow = MemoryLayout<LPPixel>.size*width
         
         texture.replace(region: region, mipmapLevel: 0, withBytes: rawData, bytesPerRow: bytesPerRow);
         
