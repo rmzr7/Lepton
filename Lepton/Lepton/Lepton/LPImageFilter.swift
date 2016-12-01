@@ -157,10 +157,12 @@ open class LPImageFilter: NSObject {
             fatalError("no GPU, aborting");
             return;
         }
+
         let img = LPImage(image:image)!
         var metalContext = LPMetalContext(device: device)
         var imageTexture = metalContext.imageToMetalTexture(image:img)!
         var maskTexture = metalContext.maskToMetalTexture(mask: mask)
+
         
         var gpufilter = LPGPUImageFilter(function: "gaussian_filter", metalContext: metalContext)
         var outputTexture = gpufilter.applyFilter(inputTexture: imageTexture, withFilter: maskTexture)
