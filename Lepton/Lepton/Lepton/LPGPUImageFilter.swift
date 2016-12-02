@@ -16,7 +16,7 @@ class LPGPUImageFilter {
     
     init(function:String, metalContext:LPMetalContext) {
         self.metalContext = metalContext
-        self.kernel = (metalContext.library?.makeFunction(name: function)!)!
+        self.kernel = (metalContext.library.makeFunction(name: function)!)
         do {
             try self.pipelineState = metalContext.device.makeComputePipelineState(function: kernel)
         }
@@ -28,7 +28,7 @@ class LPGPUImageFilter {
     
     func applyFilter(inputTexture:MTLTexture, withFilter filterTexture:MTLTexture) -> MTLTexture {
         
-        let outputDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Uint, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
+        let outputDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Uint, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
         let outputTexture = metalContext.device.makeTexture(descriptor: outputDesc)
         
         let threadGroupCounts = MTLSizeMake(8,8,1)

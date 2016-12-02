@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Metal
 
 struct LPPixel {
     var value: UInt32
@@ -79,6 +80,14 @@ public struct LPImage {
         pixels = UnsafeMutableBufferPointer<LPPixel>(start: imageData, count: width * height)
     }
     
+    func LPPixelToInt() -> UnsafeMutableBufferPointer<UInt32> {
+        var metal_pixels = UnsafeMutablePointer<UInt32>.allocate(capacity: width * height)
+        for idx in 0..<width * height {
+            metal_pixels[idx] = pixels[idx].value
+        }
+        return UnsafeMutableBufferPointer<UInt32>(start: metal_pixels, count: width * height)
+    }
+    
     func toUIImage() -> UIImage? {
         let bitsPerComponent = 8 // 1
         
@@ -94,6 +103,8 @@ public struct LPImage {
         let image = UIImage(cgImage: cgImage)
         return image
     }
+    
+    
 }
 
 extension Float {

@@ -155,7 +155,7 @@ open class LPImageFilter: NSObject {
     open func acceleratedImageBlurGPU(_ image:UIImage, mask:LPMask = LPMask()) -> UIImage? {
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("no GPU, aborting");
-            return;
+            return nil;
         }
 
         let img = LPImage(image:image)!
@@ -167,7 +167,7 @@ open class LPImageFilter: NSObject {
         var gpufilter = LPGPUImageFilter(function: "gaussian_filter", metalContext: metalContext)
         var outputTexture = gpufilter.applyFilter(inputTexture: imageTexture, withFilter: maskTexture)
         
-        
+        return metalContext.imageFromTexture(texture: outputTexture)
         
     }
     

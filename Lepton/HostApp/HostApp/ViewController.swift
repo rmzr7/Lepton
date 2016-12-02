@@ -18,7 +18,9 @@ class ViewController: UIViewController {
         let lepton = LPImageFilter()
         let gaussian3 = lepton.makeGaussianFilter(1.0)
         //let x = lepton.blurImage(image!, mask: gaussian3)
-        let x = lepton.acceleratedBlurImageCPU(image!, mask:gaussian3)
+        //let x = lepton.acceleratedBlurImageCPU(image!, mask:gaussian3)
+        let x = lepton.acceleratedImageBlurGPU(image!, mask:gaussian3)
+
         let imageView = UIImageView(image: x)
         imageView.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
         view.addSubview(imageView)
