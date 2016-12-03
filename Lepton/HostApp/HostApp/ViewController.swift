@@ -16,7 +16,7 @@ class ViewController: UIViewController {
         let image = UIImage(named: "SeaSideSmall")
         
         let lepton = LPImageFilter()
-        let gaussian3 = lepton.makeGaussianFilter(1.0)
+        let gaussian3 = lepton.GaussianFilterGenerator(1.0)
         //let x = lepton.blurImage(image!, mask: gaussian3)
         //let x = lepton.acceleratedBlurImageCPU(image!, mask:gaussian3)
         let x = lepton.acceleratedImageBlurGPU(image!, mask:gaussian3)

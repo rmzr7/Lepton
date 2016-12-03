@@ -28,7 +28,7 @@ class LPGPUImageFilter {
     
     func applyFilter(inputTexture:MTLTexture, withFilter filterTexture:MTLTexture) -> MTLTexture {
         
-        let outputDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Uint, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
+        let outputDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
         let outputTexture = metalContext.device.makeTexture(descriptor: outputDesc)
         
         let threadGroupCounts = MTLSizeMake(8,8,1)

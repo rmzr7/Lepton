@@ -11,24 +11,19 @@ import Accelerate
 import Metal
 
 public struct LPMask {
-    var height = 0
-    var width = 0
-    public var mask:[[Float]]!
+    var maskWidth:Int
+    public var mask:[Float]
     
-    init(height:Int=3, width:Int=3, mask:[[Float]] = [
-        [0.2, 0.2, 0.0],
-        [0.2, 0.2, 0.2],
-        [0.0, 0.2, 0.0]
-        ]) {
-        assert(height == mask.count)
-        self.height = height
-        self.width = width
+    init(maskWidth:Int=3, mask:[Float] =
+        [0.2, 0.2, 0.0,
+        0.2, 0.2, 0.2,
+        0.0, 0.2, 0.0])
+    {
+        assert(maskWidth * maskWidth == mask.count)
+        self.maskWidth = maskWidth
         self.mask = mask
     }
 }
-
-
-
 
 open class LPImageFilter: NSObject {
     public override init() {
@@ -38,81 +33,86 @@ open class LPImageFilter: NSObject {
     open func blurImage(_ image:UIImage, mask:LPMask = LPMask()) -> UIImage? {
         
         let pixels = LPImage(image:image)!
-        let width = pixels.width
-        let height = pixels.height
+        let imageWidth = pixels.width
+        let imageHeight = pixels.height
         let factor:Float = 1.0
         let bias:Float = 0.0
-        for y in 0..<pixels.height {
-            for x in 0..<pixels.width {
-                let idx = y*pixels.width+x
+        
+        for y in 0..<imageHeight {
+            for x in 0..<imageWidth {
+                
+                let imageIdx = y * imageWidth + x
                 var red:Float = 0.0, green:Float = 0.0, blue:Float = 0.0
+                let maskWidth = mask.maskWidth
 
-
-                for fy in 0..<mask.height {
-                    for fx in 0..<mask.width {
-                        let imageX:Int = (x - mask.width / 2 + fx + pixels.width) % width
-                        let imageY:Int = (y - mask.height / 2 + fy + pixels.height) % height
-                        let pixel = pixels.pixels[(imageY * width + imageX)]
-                        red += Float(pixel.red) * mask.mask[fy][fx]
-                        green += Float(pixel.green) * mask.mask[fy][fx]
-                        blue += Float(pixel.blue) * mask.mask[fy][fx]
+                for fy in 0..<maskWidth {
+                    for fx in 0..<maskWidth {
+                        let maskIdx = fy * maskWidth + fx
+                        let imageX:Int = (x - maskWidth / 2 + fx + imageWidth) % imageWidth
+                        let imageY:Int = (y - maskWidth / 2 + fy + imageHeight) % imageHeight
+                        let pixel = pixels.pixels[(imageY * imageWidth + imageX)]
+                        red += Float(pixel.red) * mask.mask[maskIdx]
+                        green += Float(pixel.green) * mask.mask[maskIdx]
+                        blue += Float(pixel.blue) * mask.mask[maskIdx]
                     }
                 }
                 
                 let newR = (factor * red + bias).toUInt8()
                 let newG = (factor * green + bias).toUInt8()
                 let newB = (factor * blue + bias).toUInt8()
-                var pixel = pixels.pixels[idx]
+                var pixel = pixels.pixels[imageIdx]
                 pixel.red = newR
                 pixel.green = newG
                 pixel.blue = newB
-                pixels.pixels[idx] = pixel
+                pixels.pixels[imageIdx] = pixel
             }
         }
         
         return pixels.toUIImage()
-
     }
-
     
-    open func makeGaussianFilter(_ sigma:Float) -> LPMask {
-        let radius = Int(3.0 * sigma)
-        let two_sigma_squared:Float = 2.0 * sigma * sigma
-        var mask = [[Float]]()
-        let pi = Float(M_PI)
-        let e = Float(M_E)
-        var sum:Float = 0.0
-        for y in -1 * radius...radius {
-            let float_y = Float(y)
-            let y_squared = float_y * float_y
-            var row = [Float]()
-            for x in -1 * radius...radius {
-                let float_x = Float(x)
-                let x_squared = float_x * float_x
-                let exp = -1.0 * (x_squared + y_squared) / two_sigma_squared
-                let val = 1.0/(pi * two_sigma_squared) * pow(e, exp)
-                row.append( val )
-                sum += val
+    open func GaussianFilterGenerator (_ sigma:Float) -> LPMask {
+
+        let radius:Int = Int(3.0 * sigma);
+        let size:Int = radius * 2 + 1;
+    
+        let delta:Float = (Float(radius) * 2.0) / (Float(size) - 1.0)
+        let expScale:Float = -1 / (2 * sigma * sigma)
+    
+        var weights:[Float] = [Float](repeating: 0.0, count: size * size)
+    
+        var weightSum:Float = 0;
+        var y:Float = -1.0 * Float(radius);
+    
+        for j in 0..<size {
+            var x:Float = -1.0 * Float(radius);
+            for i in 0..<size {
+                let weight:Float = expf((x * x + y * y) * expScale);
+                weights[j * size + i] = weight;
+                weightSum += weight;
+                x += delta
             }
-            mask.append(row)
+            y += delta
+        }
+    
+        let weightScale:Float = 1.0 / weightSum;
+        for j in 0..<size {
+            for i in 0..<size {
+                weights[j * size + i] *= weightScale;
+            }
         }
         
-        for r in 0..<(radius * 2 + 1) {
-            for c in 0..<(radius * 2 + 1) {
-                mask[r][c] /= sum
-            }
-        }
-        return LPMask(height: (radius * 2 + 1), width: (radius * 2 + 1), mask:mask)
+        return LPMask(maskWidth: size, mask: weights)
     }
+
     
     open func acceleratedBlurImageCPU(_ image:UIImage, mask:LPMask = LPMask()) -> UIImage? {
         
         
         // 0. Get pixel data
         let pixels = LPImage(image: image)!
-        let kernel = mask.mask!
-        let filterLen = mask.height
-        let filter = Matrix<Float>(kernel).grid
+        let filterLen = mask.maskWidth
+        let filter = mask.mask
         let imageWidth = pixels.width
         let imageHeight = pixels.height
         
@@ -159,13 +159,13 @@ open class LPImageFilter: NSObject {
         }
 
         let img = LPImage(image:image)!
-        var metalContext = LPMetalContext(device: device)
-        var imageTexture = metalContext.imageToMetalTexture(image:img)!
-        var maskTexture = metalContext.maskToMetalTexture(mask: mask)
+        let metalContext = LPMetalContext(device: device)
+        let imageTexture = metalContext.imageToMetalTexture(image:img)!
+        let maskTexture = metalContext.maskToMetalTexture(mask: mask)
 
         
-        var gpufilter = LPGPUImageFilter(function: "gaussian_filter", metalContext: metalContext)
-        var outputTexture = gpufilter.applyFilter(inputTexture: imageTexture, withFilter: maskTexture)
+        let gpufilter = LPGPUImageFilter(function: "gaussian_filter", metalContext: metalContext)
+        let outputTexture = gpufilter.applyFilter(inputTexture: imageTexture, withFilter: maskTexture)
         
         return metalContext.imageFromTexture(texture: outputTexture)
         
