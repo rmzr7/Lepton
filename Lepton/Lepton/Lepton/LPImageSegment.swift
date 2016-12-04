@@ -21,7 +21,7 @@ open class LPImageSegment: NSObject{
         let imageHeight = img.height
         let numPixels = imageWidth * imageHeight
         let points = Array<LPPixel>(img.pixels)
-        let (clusters, memberships) = kMeans(points: points, k: 2, seed: 0)
+        let (clusters, memberships) = kMeans(points: points, k: 16, seed: 0)
         
         for i in 0..<numPixels {
             let membership = memberships[i]
@@ -31,7 +31,7 @@ open class LPImageSegment: NSObject{
             let newB = centroid.blue
             var pixel = img.pixels[i]
             pixel.red = newR
-//            pixel.green = newG
+            pixel.green = newG
             pixel.blue = newB
             img.pixels[i] = pixel
         }
