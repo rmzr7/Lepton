@@ -28,7 +28,10 @@ func kMeans(points:[LPPixel], k:Int, seed:UInt32, threshold:Float = 0.001) -> ([
     
     repeat {
         squaresError = 0
-        var newCentroids = [LPPixel](repeating:LPPixel(value: 0),count:k)
+        var newCentroidRed = [Int](repeating: 0,count:k)
+        var newCentroidGreen = [Int](repeating: 0,count:k)
+        var newCentroidBlue = [Int](repeating: 0,count:k)
+
         var newClusterSizes = [Int](repeating: 0, count: k)
         
         for i in 0..<n {
@@ -39,13 +42,19 @@ func kMeans(points:[LPPixel], k:Int, seed:UInt32, threshold:Float = 0.001) -> ([
                 memberships[i] = clusterIndex
             }
             newClusterSizes[clusterIndex] += 1
-            newCentroids[clusterIndex] = newCentroids[clusterIndex] + point
+            newCentroidRed[clusterIndex] = newCentroidRed[clusterIndex] + Int(point.red)
+            newCentroidGreen[clusterIndex] = newCentroidGreen[clusterIndex] + Int(point.green)
+            newCentroidBlue[clusterIndex] = newCentroidBlue[clusterIndex] + Int(point.blue)
         }
         
         for i in 0..<k {
             let size = newClusterSizes[i]
             if size > 0 {
-                centroids[i] = newCentroids[i] / size
+                
+                centroids[i].red = (Float(newCentroidRed[i]) / Float(size)).toUInt8()
+                centroids[i].green = (Float(newCentroidGreen[i]) / Float(size)).toUInt8()
+                centroids[i].blue = (Float(newCentroidBlue[i]) / Float(size)).toUInt8()
+
             }
         }
         clusterSizes = newClusterSizes
