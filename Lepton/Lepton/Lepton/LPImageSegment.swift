@@ -17,23 +17,25 @@ open class LPImageSegment: NSObject{
     
     open func kmeansSegment (_ image:UIImage) -> UIImage? {
         let img = LPImage(image:image)!
-        let pixels = img.pixels
-        let points = Array<LPPixel>(pixels)
-        let clusters = kMeans(points: points, k: 2, seed: 0)
+        let imageWidth = img.width
+        let imageHeight = img.height
+        let numPixels = imageWidth * imageHeight
+        let points = Array<LPPixel>(img.pixels)
+        let (clusters, memberships) = kMeans(points: points, k: 2, seed: 0)
         
-        var newPoints = points
-        let size = img.height * img.width
-        
-//        for i in 0..<size {
-//            newPoints[i].red = clusters
-//        }
-//        for
-//        for(i=0; i<size; i++){
-//            int idx = clusters->data.i[i];
-//            dst_img->imageData[i*3+0] = (char)centers->data.fl[idx*3+0];
-//            dst_img->imageData[i*3+1] = (char)centers->data.fl[idx*3+1];
-//            dst_img->imageData[i*3+2] = (char)centers->data.fl[idx*3+2];
-//        }
+        for i in 0..<numPixels {
+            let membership = memberships[i]
+            let centroid = clusters[membership].centroid
+            let newR = centroid.red
+            let newG = centroid.green
+            let newB = centroid.blue
+            var pixel = img.pixels[i]
+            pixel.red = newR
+//            pixel.green = newG
+            pixel.blue = newB
+            img.pixels[i] = pixel
+        }
+    
         return img.toUIImage()
     }
 }
