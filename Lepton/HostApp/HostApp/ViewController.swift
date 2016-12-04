@@ -16,12 +16,16 @@ class ViewController: UIViewController {
         let image = UIImage(named: "SeaSideSmall")
         
         let lepton = LPImageFilter()
+        let kmeans = LPImageSegment()
+        
+        
+        
         let gaussian3 = lepton.GaussianFilterGenerator(1.0)
         //let x = lepton.blurImage(image!, mask: gaussian3)
         //let x = lepton.acceleratedBlurImageCPU(image!, mask:gaussian3)
-        let x = lepton.acceleratedImageBlurGPU(image!, mask:gaussian3)
-
-        let imageView = UIImageView(image: x)
+        let newImage = kmeans.kmeansSegment(image!);
+        
+        let imageView = UIImageView(image: newImage)
         imageView.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
         view.addSubview(imageView)
         let newImageView = UIImageView(image: image)
