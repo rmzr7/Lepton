@@ -13,7 +13,7 @@ struct Cluster {
     let size: Int
 }
 
-func kMeans(points:[LPPixel], k:Int, seed:UInt32, threshold:Float = 0.001) -> ([Cluster], [Int]) {
+func kMeans(points:[LPPixel], k:Int, threshold:Float = 0.001) -> ([Cluster], [Int]) {
     let n = points.count
     assert(k <= n, "k cannot be larger than the total number of points")
     
