@@ -26,7 +26,9 @@ func kMeans(points:[LPPixel], k:Int, threshold:Float = 0.001) -> ([Cluster], [In
     var squaresError:Float = 0
     var prevSquaresError:Float = 0
     
+    
     repeat {
+        prevSquaresError = squaresError
         squaresError = 0
         var newCentroidRed = [Int](repeating: 0,count:k)
         var newCentroidGreen = [Int](repeating: 0,count:k)
@@ -59,7 +61,6 @@ func kMeans(points:[LPPixel], k:Int, threshold:Float = 0.001) -> ([Cluster], [In
         }
         
         clusterSizes = newClusterSizes
-        prevSquaresError = squaresError
     } while abs(squaresError - prevSquaresError) > threshold
     
     let clusters = zip(centroids, clusterSizes).map { Cluster(centroid: $0, size: $1) }
