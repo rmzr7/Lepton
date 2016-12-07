@@ -13,7 +13,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let image = UIImage(named: "SeaSideSmall")
+        let image = UIImage(named: "high res")
         
         let lepton = LPImageFilter()
         let kmeans = LPImageSegment()
