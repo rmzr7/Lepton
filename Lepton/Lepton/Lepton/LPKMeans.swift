@@ -82,16 +82,7 @@ private func findNearestCluster(_ point: LPPixel, centroids: [LPPixel], k: Int) 
     return clusterIndex
 }
 
-private func randomNumberInRange(_ range: Range<Int>) -> Int {
-    let interval = range.upperBound - range.lowerBound - 1
-    let buckets = Int(RAND_MAX) / interval
-    let limit = buckets * interval
-    var r = 0
-    repeat {
-        r = Int(arc4random())
-    } while r >= limit
-    return range.lowerBound + (r / buckets)
-}
+
 
 private extension Array {
     func randomValues(_ num: Int) -> [Element] {

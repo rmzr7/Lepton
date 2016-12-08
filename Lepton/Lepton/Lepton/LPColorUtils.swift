@@ -42,3 +42,14 @@ func colorDifference2(color1:LPPixel, color2:LPPixel) -> Float {
     
     return pow(ΔL / (kL * Sl), 2) + pow(ΔC / (kC * Sc), 2) + pow(ΔH / (kH * Sh), 2)
 }
+
+func randomNumberInRange(_ range: Range<Int>) -> Int {
+    let interval = range.upperBound - range.lowerBound - 1
+    let buckets = Int(RAND_MAX) / interval
+    let limit = buckets * interval
+    var r = 0
+    repeat {
+        r = Int(arc4random())
+    } while r >= limit
+    return range.lowerBound + (r / buckets)
+}
