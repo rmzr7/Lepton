@@ -63,6 +63,8 @@ class LPGPUKMeans {
             let membershipBuf = metalContext.createIntArray(array:memberships)
             let sizesBuf = metalContext.createIntArray(array: clusterSizes)
             
+            let centroidsBuf = createIntArray(array:centoids)
+            
             let clusterCE = commandBuffer.makeComputeCommandEncoder()
             clusterCE.setComputePipelineState(clusterPipelineState)
             clusterCE.setTexture(inputTexture, at:0)
@@ -71,6 +73,8 @@ class LPGPUKMeans {
             clusterCE.setBuffer(redBuffer, offset: 0, at: 2)
             clusterCE.setBuffer(greenBuf, offset: 0, at: 3)
             clusterCE.setBuffer(blueBuf, offset: 0, at: 4)
+            clusterCE.setBuffer(centroidsBuf, offset: 0, at: 5)
+            clusterCE.setBuffer(sizesBuf, offset:0,at: 6)
 
             clusterCE.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCounts)
             clusterCE.endEncoding()
@@ -84,15 +88,24 @@ class LPGPUKMeans {
                 let size = newClusterSizes[i]
                 if size > 0 {
                     
-                    centroids[i].red = (Float(newCentroidRed[i]) / Float(size)).toUInt8()
-                    centroids[i].green = (Float(newCentroidGreen[i]) / Float(size)).toUInt8()
-                    centroids[i].blue = (Float(newCentroidBlue[i]) / Float(size)).toUInt8()
-                    
+                    var newCentroid = Int.fromRGB(r:(Float(newCentroidRed[i]) / Float(size)).toUInt8(),g:(Float(newCentroidGreen[i]) / Float(size)).toUInt8(), b:(Float(newCentroidBlue[i]) / Float(size)).toUInt8())
+                    centroids[i] = newCentroid
                 }
             }
             
         } while (squaresError / Float(n) > threshold)
         
+    }
+}
+
+extension Int {
+    static func fromRGB(r:UInt8, g:UInt8, b:UInt8) -> Int {
+        var pixel = 0
+        pixel = Int(UInt32(r) | (UInt32(pixel) & 0xFFFFFF00))
+        pixel = Int((UInt32(g) << 8) | (UInt32(pixel) & 0xFFFF00FF))
+        pixel = Int((UInt32(b) << 16) | (UInt32(pixel) & 0xFF00FFFF))
+        pixel = Int((UInt32(1) << 24) | (UInt32(pixel) & 0x00FFFFFF))
+        return pixel
     }
 }
 
