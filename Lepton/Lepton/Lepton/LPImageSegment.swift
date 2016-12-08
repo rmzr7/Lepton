@@ -15,13 +15,16 @@ open class LPImageSegment: NSObject{
         super.init()
     }
     
+    let kMeansThreshhold:Float = 0.002
+    let k = 8
+    
     open func kmeansSegment (_ image:UIImage) -> UIImage? {
         let img = LPImage(image:image)!
         let imageWidth = img.width
         let imageHeight = img.height
         let numPixels = imageWidth * imageHeight
         let points = Array<LPPixel>(img.pixels)
-        let (clusters, memberships) = kMeans(points: points, k: 10, seed: 0, threshold: 0.001)
+        let (clusters, memberships) = kMeans(points: points, k: k, threshold: kMeansThreshhold)
         
         for i in 0..<numPixels {
             let membership = memberships[i]

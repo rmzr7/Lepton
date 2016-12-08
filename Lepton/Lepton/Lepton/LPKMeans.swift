@@ -13,7 +13,8 @@ struct Cluster {
     let size: Int
 }
 
-func kMeans(points:[LPPixel], k:Int, seed:UInt32, threshold:Float = 0.001) -> ([Cluster], [Int]) {
+func kMeans(points:[LPPixel], k:Int, threshold:Float = 0.001) -> ([Cluster], [Int]) {
+    
     let n = points.count
     assert(k <= n, "k cannot be larger than the total number of points")
     
@@ -24,11 +25,10 @@ func kMeans(points:[LPPixel], k:Int, seed:UInt32, threshold:Float = 0.001) -> ([
     var clusterSizes = [Int](repeating: 0, count: k)
     
     var squaresError:Float = 0
-    //var prevSquaresError:Float = 0
     var loopcount = 0
-    
-    //let limit = threshold*Float(n);
-    //print("limit is \(limit)")
+    let limit = Int(threshold*Float(n));
+
+    print("limit is \(limit)")
 
     repeat {
         loopcount += 1
@@ -65,12 +65,7 @@ func kMeans(points:[LPPixel], k:Int, seed:UInt32, threshold:Float = 0.001) -> ([
         }
         
         clusterSizes = newClusterSizes
-        //let error = abs(squaresError - prevSquaresError)/max(squaresError, prevSquaresError)
-        //print("squaresError is \(squaresError), prevSquaresError is \(prevSquaresError), error is \(error)")
-
-        //var x = squaresError - prevSquaresError
     } while (squaresError / Float(n) > threshold)
-//    } while(pow(abs(prevSquaresError-Float(n)), 2)/pow(Float(n), 2) > threshold)
     
     print("loop count is \(loopcount)")
     let clusters = zip(centroids, clusterSizes).map { Cluster(centroid: $0, size: $1) }
@@ -81,7 +76,7 @@ private func findNearestCluster(_ point: LPPixel, centroids: [LPPixel], k: Int) 
     var minDistance = Float.infinity
     var clusterIndex = 0
     for i in 0..<k {
-        let distance = colorDifference(color1: point, color2: centroids[i])
+        let distance = colorDifference2(color1: point, color2: centroids[i])
         if distance < minDistance {
             minDistance = distance
             clusterIndex = i

@@ -28,8 +28,8 @@ struct LPPixel {
         set { value = (UInt32(newValue) << 24) | (value & 0x00FFFFFF) }
     }
     
-    func rgb() -> (UInt8, UInt8, UInt8) {
-        return (red, green, blue)
+    func rgb() -> (Float, Float, Float) {
+        return (Float(red), Float(green), Float(blue))
     }
     
     static func + (left:LPPixel, right:LPPixel) -> LPPixel {

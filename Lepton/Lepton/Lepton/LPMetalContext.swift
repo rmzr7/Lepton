@@ -85,6 +85,11 @@ class LPMetalContext {
         // Creates the final UIImage
         return UIImage(cgImage: dstImage!, scale: 0.0, orientation: UIImageOrientation.downMirrored)
     }
+}
 
-
+extension LPMetalContext {
+    func createFloatArray(array:[Float], metalDevice:MTLDevice) -> MTLBuffer  {
+        let length = array.count * MemoryLayout<Float>.size
+        return metalDevice.makeBuffer(bytes: array, length: length, options: .cpuCacheModeWriteCombined)
+    }
 }
