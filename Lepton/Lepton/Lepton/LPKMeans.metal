@@ -22,9 +22,12 @@ device float colorDifference(float4 color1, float4 color2) {
 }
 
 kernel void findNearestCluster(texture2d<float, access::read> inTexture [[texture(0)]],
-                               device uint* memberships,
-                               device uint* membershipChanged,
-                               device uint* centroids,
+                               device uint* memberships [[buffer(1)]],
+                               device float* red [[buffer(2)]],
+                               device float* green [[buffer(3)]],
+                               device float* blue [[buffer(4)]],
+                               device int* centroids [[buffer(5)]],
+                               device int* clusterSizes [[buffer(6)]],
                                uint k,
                                uint2 gid [[thread_position_in_grid]]) {
     
