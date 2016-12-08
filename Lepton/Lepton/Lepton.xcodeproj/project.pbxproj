@@ -15,6 +15,7 @@
 		2D60A0001DEFB5DB0098AD9A /* LPColorUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D609FFF1DEFB5DB0098AD9A /* LPColorUtils.swift */; };
 		2D72DA221DEE87890028D1CF /* LPGPUImageFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D72DA211DEE87890028D1CF /* LPGPUImageFilter.swift */; };
 		2D72DA241DEEA5A70028D1CF /* LPKMeans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D72DA231DEEA5A70028D1CF /* LPKMeans.swift */; };
+		2D8B27821DF8D99700D538FF /* LPKMeans.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2D8B27811DF8D99700D538FF /* LPKMeans.metal */; };
 		B8600CAE1DDD78DA0019B31E /* img2col.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8600CAD1DDD78DA0019B31E /* img2col.swift */; };
 		B8600CB01DDD807A0019B31E /* Img2ColTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8600CAF1DDD807A0019B31E /* Img2ColTests.swift */; };
 		B8600CB11DDD88EE0019B31E /* LPPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC08BF201DDBCDE600F82684 /* LPPixel.swift */; };
@@ -56,6 +57,7 @@
 		2D609FFF1DEFB5DB0098AD9A /* LPColorUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPColorUtils.swift; sourceTree = "<group>"; };
 		2D72DA211DEE87890028D1CF /* LPGPUImageFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPGPUImageFilter.swift; sourceTree = "<group>"; };
 		2D72DA231DEEA5A70028D1CF /* LPKMeans.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPKMeans.swift; sourceTree = "<group>"; };
+		2D8B27811DF8D99700D538FF /* LPKMeans.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = LPKMeans.metal; sourceTree = "<group>"; };
 		B8600CAD1DDD78DA0019B31E /* img2col.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = img2col.swift; sourceTree = "<group>"; };
 		B8600CAF1DDD807A0019B31E /* Img2ColTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Img2ColTests.swift; sourceTree = "<group>"; };
 		CC08BF201DDBCDE600F82684 /* LPPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPPixel.swift; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 				CC10A07A1DD441D500C1ED90 /* Info.plist */,
 				B8600CAD1DDD78DA0019B31E /* img2col.swift */,
 				13578B5E1DEE9823002A8CF8 /* LPImageSegment.swift */,
+				2D8B27811DF8D99700D538FF /* LPKMeans.metal */,
 			);
 			path = Lepton;
 			sourceTree = "<group>";
@@ -271,6 +274,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D8B27821DF8D99700D538FF /* LPKMeans.metal in Sources */,
 				CC22601B1DDE545B00A7D582 /* SurgeArithmetic.swift in Sources */,
 				2D1FBF121DF3919E0010658B /* LPImageSegment.swift in Sources */,
 				2D3C5DEC1DED561C00C3D4E6 /* LPFilters.metal in Sources */,

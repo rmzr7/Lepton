@@ -87,8 +87,8 @@ class LPMetalContext {
 }
 
 extension LPMetalContext {
-    func createFloatArray(array:[Float], metalDevice:MTLDevice)  {
+    func createFloatArray(array:[Float], metalDevice:MTLDevice) -> MTLBuffer  {
         let length = array.count * MemoryLayout<Float>.size
-//        return metalDevice.makeBuffer(bytes: array, length: length, options: MTLCPUCacheMode.defaultCache)
+        return metalDevice.makeBuffer(bytes: array, length: length, options: .cpuCacheModeWriteCombined)
     }
 }
