@@ -21,7 +21,7 @@ open class LPImageSegment: NSObject{
         let imageHeight = img.height
         let numPixels = imageWidth * imageHeight
         let points = Array<LPPixel>(img.pixels)
-        let (clusters, memberships) = kMeans(points: points, k: 6, seed: 0, threshold: 0.02)
+        let (clusters, memberships) = kMeans(points: points, k: 10, seed: 0, threshold: 0.001)
         
         for i in 0..<numPixels {
             let membership = memberships[i]
@@ -37,5 +37,22 @@ open class LPImageSegment: NSObject{
         }
     
         return img.toUIImage()
+    }
+    
+    open func KMeansGPU(_ image:UIImage) -> UIImage? {
+        guard let device = MTLCreateSystemDefaultDevice() else {
+            fatalError("no GPU, aborting");
+            return nil;
+        }
+        let metalContext = LPMetalContext(device: device)
+        let img = LPImage(image:image)!
+        let imageTexture = metalContext.imageToMetalTexture(image:img)!
+        let outputTexture = 
+        
+        
+        
+        
+        
+        return metalContext.imageFromTexture(texture: <#T##MTLTexture#>)
     }
 }

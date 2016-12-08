@@ -24,7 +24,7 @@ func kMeans(points:[LPPixel], k:Int, seed:UInt32, threshold:Float = 0.001) -> ([
     var clusterSizes = [Int](repeating: 0, count: k)
     
     var squaresError:Float = 0
-    var prevSquaresError:Float = 0
+    //var prevSquaresError:Float = 0
     var loopcount = 0
     
     //let limit = threshold*Float(n);
@@ -32,7 +32,7 @@ func kMeans(points:[LPPixel], k:Int, seed:UInt32, threshold:Float = 0.001) -> ([
 
     repeat {
         loopcount += 1
-        prevSquaresError = squaresError
+        //prevSquaresError = squaresError
         squaresError = 0
         var newCentroidRed = [Int](repeating: 0,count:k)
         var newCentroidGreen = [Int](repeating: 0,count:k)
@@ -65,11 +65,11 @@ func kMeans(points:[LPPixel], k:Int, seed:UInt32, threshold:Float = 0.001) -> ([
         }
         
         clusterSizes = newClusterSizes
-        let error = abs(squaresError - prevSquaresError)/max(squaresError, prevSquaresError)
-        print("error is \(error)")
+        //let error = abs(squaresError - prevSquaresError)/max(squaresError, prevSquaresError)
+        //print("squaresError is \(squaresError), prevSquaresError is \(prevSquaresError), error is \(error)")
 
         //var x = squaresError - prevSquaresError
-    } while (abs(squaresError - prevSquaresError)/max(squaresError, prevSquaresError) > threshold)
+    } while (squaresError / Float(n) > threshold)
 //    } while(pow(abs(prevSquaresError-Float(n)), 2)/pow(Float(n), 2) > threshold)
     
     print("loop count is \(loopcount)")

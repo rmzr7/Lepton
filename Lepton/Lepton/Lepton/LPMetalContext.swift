@@ -57,6 +57,7 @@ class LPMetalContext {
         return maskTexture
     }
     
+    // Turns a texture into a UIImage
     func imageFromTexture(texture: MTLTexture) -> UIImage {
         let bytesPerPixel = 4
         // The total number of bytes of the texture
