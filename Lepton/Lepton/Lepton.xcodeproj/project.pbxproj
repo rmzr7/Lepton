@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		13325B7C1DF8E3140043F5CD /* LPGPUKMeans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13325B7B1DF8E3140043F5CD /* LPGPUKMeans.swift */; };
 		2D0D0C4C1DEA4E96008B35A6 /* LPMetalContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0D0C4B1DEA4E96008B35A6 /* LPMetalContext.swift */; };
 		2D0D0C4E1DEA5B07008B35A6 /* PerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0D0C4D1DEA5B07008B35A6 /* PerformanceTests.swift */; };
 		2D0D0C511DEA7092008B35A6 /* seaSideTest.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2D0D0C501DEA7092008B35A6 /* seaSideTest.jpg */; };
@@ -49,6 +50,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		13325B7B1DF8E3140043F5CD /* LPGPUKMeans.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPGPUKMeans.swift; sourceTree = "<group>"; };
 		13578B5E1DEE9823002A8CF8 /* LPImageSegment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPImageSegment.swift; sourceTree = "<group>"; };
 		2D0D0C4B1DEA4E96008B35A6 /* LPMetalContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LPMetalContext.swift; sourceTree = "<group>"; };
 		2D0D0C4D1DEA5B07008B35A6 /* PerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PerformanceTests.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 			children = (
 				2D0D0C4B1DEA4E96008B35A6 /* LPMetalContext.swift */,
 				2D72DA211DEE87890028D1CF /* LPGPUImageFilter.swift */,
+				13325B7B1DF8E3140043F5CD /* LPGPUKMeans.swift */,
 			);
 			name = Metal;
 			sourceTree = "<group>";
@@ -277,6 +280,7 @@
 				2D8B27821DF8D99700D538FF /* LPKMeans.metal in Sources */,
 				CC22601B1DDE545B00A7D582 /* SurgeArithmetic.swift in Sources */,
 				2D1FBF121DF3919E0010658B /* LPImageSegment.swift in Sources */,
+				13325B7C1DF8E3140043F5CD /* LPGPUKMeans.swift in Sources */,
 				2D3C5DEC1DED561C00C3D4E6 /* LPFilters.metal in Sources */,
 				CCEE3C2F1DDAA83D00524F6F /* LPEngine.swift in Sources */,
 				2D60A0001DEFB5DB0098AD9A /* LPColorUtils.swift in Sources */,

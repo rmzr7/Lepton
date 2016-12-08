@@ -26,9 +26,6 @@ func kMeans(points:[LPPixel], k:Int, threshold:Float = 0.001) -> ([Cluster], [In
     
     var squaresError:Float = 0
     var loopcount = 0
-    let limit = Int(threshold*Float(n));
-
-    print("limit is \(limit)")
 
     repeat {
         loopcount += 1
