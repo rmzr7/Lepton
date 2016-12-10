@@ -10,23 +10,22 @@ import Foundation
 import Metal
 
 class LPGPUKMeans {
-    var clusterPipelineState:MTLComputePipelineState
     var metalContext:LPMetalContext
     
-    init(clusterFunction:String, metalContext:LPMetalContext) {
+    init(metalContext:LPMetalContext) {
         self.metalContext = metalContext
-        let kernel = (metalContext.library.makeFunction(name: clusterFunction)!)
-        do {
-            try self.clusterPipelineState = metalContext.device.makeComputePipelineState(function: kernel)
-        }
-        catch {
-            fatalError("error while create compute pipline for function \(clusterFunction)")
-        }
     }
     
-    // TODO: finish this function. We shouldn't init a pipeline because we have two functions this time.
-    func createComputePipeline() {
-        
+    func createComputePipeline(function:String) -> MTLComputePipelineState? {
+        let computeFunction = (metalContext.library.makeFunction(name: function)!)
+        do {
+            let pipeline = try metalContext.device.makeComputePipelineState(function: computeFunction)
+            return pipeline
+        }
+        catch {
+            fatalError("error while create compute pipline for function \(function)")
+        }
+        return nil
     }
     
     // TODO: finish making necessary changes to squaresError, other stuff
