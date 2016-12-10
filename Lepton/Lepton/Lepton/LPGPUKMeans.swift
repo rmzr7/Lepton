@@ -16,18 +16,6 @@ class LPGPUKMeans {
         self.metalContext = metalContext
     }
     
-    func createComputePipeline(function:String) -> MTLComputePipelineState? {
-        let computeFunction = (metalContext.library.makeFunction(name: function)!)
-        do {
-            let pipeline = try metalContext.device.makeComputePipelineState(function: computeFunction)
-            return pipeline
-        }
-        catch {
-            fatalError("error while create compute pipline for function \(function)")
-        }
-        return nil
-    }
-    
     // TODO: finish making necessary changes to squaresError, other stuff
     func generateClusters(inputTexture:MTLTexture, k:Int) -> ([Int],[Int])  {
         let threshold:Float = 0.01;
@@ -67,7 +55,8 @@ class LPGPUKMeans {
             let centroidsBuf = metalContext.createIntArray(array:centroids)
             
             let clusterCE = commandBuffer.makeComputeCommandEncoder()
-            clusterCE.setComputePipelineState(clusterPipelineState)
+            let clusterPipleline = metalContext.createComputePipeline(function: "findNearestCluster")!
+            clusterCE.setComputePipelineState(clusterPipleline)
             clusterCE.setTexture(inputTexture, at:0)
             clusterCE.setBuffer(membershipBuf, offset: 0, at: 1)
             
@@ -105,9 +94,34 @@ class LPGPUKMeans {
         return (centroids, memberships)
     }
     
-    //TODO: finish this function 
-    func assignClusters () {
+    func assignClusters (centroids:[Int], memberships:[Int], inputTexture:MTLTexture) -> MTLTexture {
         
+        let outputDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
+        let outputTexture = metalContext.device.makeTexture(descriptor:outputDesc)
+        
+        let threadGroupCount = MTLSizeMake(8,8,1)
+        let threadGroups = MTLSizeMake(inputTexture.width/threadGroupCount.width, inputTexture.height/threadGroupCount.height, 1);
+        
+
+        let assignPipeline = metalContext.createComputePipeline(function: "applyClusterColors")!
+        let commandBuffer = metalContext.commandQueue.makeCommandBuffer()
+        let commandEncoder = commandBuffer.makeComputeCommandEncoder()
+        let centroidsBuf = metalContext.createIntArray(array:centroids)
+        let membershipBuf = metalContext.createIntArray(array:memberships)
+
+        commandEncoder.setComputePipelineState(assignPipeline)
+        commandEncoder.setTexture(inputTexture, at:0)
+        commandEncoder.setBuffer(centroidsBuf, offset:0, at:1)
+        commandEncoder.setBuffer(membershipBuf, offset:0, at:2)
+        commandEncoder.setTexture(outputTexture, at:3)
+        
+        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCount)
+        commandEncoder.endEncoding()
+
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        
+        return outputTexture
     }
 }
 

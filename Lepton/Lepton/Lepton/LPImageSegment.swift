@@ -44,8 +44,7 @@ open class LPImageSegment: NSObject{
         return img.toUIImage()
     }
     
-    // TODO: finish this
-    open func KMeansGPU(_ image:UIImage) -> UIImage? {
+    open func KMeansGPU(_ image:UIImage, k:Int) -> UIImage? {
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("no GPU, aborting");
             return nil;
@@ -54,7 +53,12 @@ open class LPImageSegment: NSObject{
         let img = LPImage(image:image)!
         let imageTexture = metalContext.imageToMetalTexture(image:img)!
         
+        var kmeans = LPGPUKMeans(metalContext:metalContext)
         
+        let (centroids, memberships) = kmeans.generateClusters(inputTexture:imageTexture,k: k)
         
+        let outputTexture = kmeans.assignClusters(centroids: centroids, memberships: memberships, inputTexture: imageTexture)
+        
+        return metalContext.imageFromTexture(texture: outputTexture)
     }
 }

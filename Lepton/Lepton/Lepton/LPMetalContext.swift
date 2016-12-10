@@ -103,4 +103,16 @@ extension LPMetalContext {
         let length = array.count * MemoryLayout<Int>.size
         return device.makeBuffer(bytes: array, length: length, options: .cpuCacheModeWriteCombined)
     }
+    
+    func createComputePipeline(function:String) -> MTLComputePipelineState? {
+        let computeFunction = (library.makeFunction(name: function)!)
+        do {
+            let pipeline = try device.makeComputePipelineState(function: computeFunction)
+            return pipeline
+        }
+        catch {
+            fatalError("error while create compute pipline for function \(function)")
+        }
+        return nil
+    }
 }
