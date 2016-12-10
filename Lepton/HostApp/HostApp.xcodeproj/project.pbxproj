@@ -11,6 +11,7 @@
 		13578B651DF11741002A8CF8 /* Lepton.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC08BF281DDBDA9000F82684 /* Lepton.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		13578B6B1DF11BED002A8CF8 /* LPFilters.metal in Sources */ = {isa = PBXBuildFile; fileRef = 13578B6A1DF11BED002A8CF8 /* LPFilters.metal */; };
 		2D0D0C4F1DEA60C6008B35A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B8970D8B1DDAAFA200C8EB10 /* Assets.xcassets */; };
+		2DD180BE1DFBDFA30015909B /* LPKMeans.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2DD180BD1DFBDFA30015909B /* LPKMeans.metal */; };
 		B8970D851DDAAFA200C8EB10 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8970D841DDAAFA200C8EB10 /* AppDelegate.swift */; };
 		B8970D871DDAAFA200C8EB10 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8970D861DDAAFA200C8EB10 /* ViewController.swift */; };
 		B8970D8A1DDAAFA200C8EB10 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B8970D881DDAAFA200C8EB10 /* Main.storyboard */; };
@@ -82,6 +83,7 @@
 
 /* Begin PBXFileReference section */
 		13578B6A1DF11BED002A8CF8 /* LPFilters.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = LPFilters.metal; path = ../../Lepton/Lepton/LPFilters.metal; sourceTree = "<group>"; };
+		2DD180BD1DFBDFA30015909B /* LPKMeans.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = LPKMeans.metal; path = ../../Lepton/Lepton/LPKMeans.metal; sourceTree = "<group>"; };
 		B8970D811DDAAFA200C8EB10 /* HostApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HostApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8970D841DDAAFA200C8EB10 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B8970D861DDAAFA200C8EB10 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				CC08BF221DDBDA9000F82684 /* Lepton.xcodeproj */,
 				B8970D841DDAAFA200C8EB10 /* AppDelegate.swift */,
 				13578B6A1DF11BED002A8CF8 /* LPFilters.metal */,
+				2DD180BD1DFBDFA30015909B /* LPKMeans.metal */,
 				B8970D861DDAAFA200C8EB10 /* ViewController.swift */,
 				B8970D881DDAAFA200C8EB10 /* Main.storyboard */,
 				B8970D8B1DDAAFA200C8EB10 /* Assets.xcassets */,
@@ -258,7 +261,7 @@
 				TargetAttributes = {
 					B8970D801DDAAFA200C8EB10 = {
 						CreatedOnToolsVersion = 7.2;
-						DevelopmentTeam = Y8PN7NQBWE;
+						DevelopmentTeam = P3KRQEA879;
 						LastSwiftMigration = 0810;
 					};
 					B8970D941DDAAFA200C8EB10 = {
@@ -351,6 +354,7 @@
 			files = (
 				B8970D871DDAAFA200C8EB10 /* ViewController.swift in Sources */,
 				13578B6B1DF11BED002A8CF8 /* LPFilters.metal in Sources */,
+				2DD180BE1DFBDFA30015909B /* LPKMeans.metal in Sources */,
 				B8970D851DDAAFA200C8EB10 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -509,10 +513,10 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = Y8PN7NQBWE;
+				DEVELOPMENT_TEAM = P3KRQEA879;
 				INFOPLIST_FILE = HostApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = LP.HostApp;
+				PRODUCT_BUNDLE_IDENTIFIER = LP.HostApp1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -523,10 +527,10 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = Y8PN7NQBWE;
+				DEVELOPMENT_TEAM = P3KRQEA879;
 				INFOPLIST_FILE = HostApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = LP.HostApp;
+				PRODUCT_BUNDLE_IDENTIFIER = LP.HostApp1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};

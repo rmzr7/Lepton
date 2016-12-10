@@ -28,7 +28,7 @@ class LPGPUKMeans {
         let width = inputTexture.width
         let height = inputTexture.height
         
-        var centroids = uniqueNumbers(0, Int(UInt32.max)/2, UInt32.max)
+        var centroids = uniqueRandoms(numberOfRandoms: 0, minNum: Int(UInt32.max)/2, maxNum: UInt32.max)
 //        for i in 0..<k {
 //            centroids[i] = randomNumberInRange(0..<Int(UInt32.max))
 //        }
