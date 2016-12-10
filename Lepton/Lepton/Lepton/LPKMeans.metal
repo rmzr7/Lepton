@@ -25,7 +25,16 @@ device float colorDifference(float4 color1, float4 color2) {
     return pow(r2-r1, 2) + pow(g2-g1, 2) + pow(b2-b1, 2);
 }
 
-
+device float4 intToFloat4(int centroid) {
+    
+    float red = float(uint(centroid & 0xFF));
+    float green = float(uint((centroid >> 8) & 0xFF));
+    float blue = float(uint((centroid >> 16) & 0xFF));
+    float alpha = 1;
+    
+    return (red, green, blue, alpha);
+    
+}
 
 // TODO: check correctness of this kernel
 kernel void findNearestCluster(texture2d<float, access::read> inTexture [[texture(0)]],
@@ -36,26 +45,26 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
                                device int* centroids [[buffer(5)]],
                                device int* clusterSizes [[buffer(6)]],
                                device int* membershipChanged [[buffer(7)]],
-                               constant KMeansParams &k [[buffer(8)]]
-                               constant
+                               constant KMeansParams &params [[buffer(8)]],
                                uint2 gid [[thread_position_in_grid]]) {
     
     float colorDiff = FLT_MAX;
     int nearestCentroid = -1;
-    int imageWidth = inTexture.imageWidth;
-    int imageHeight = inTexture.imageHeight;
+    int k = params.k;
+    int imageWidth = inTexture.get_width();
+    float4 pixelColor = inTexture.read(gid).rgba;
+    
     for (int i = 0; i < k; i++) {
-        float4 centroidColor = centroids[i].rgba;
-        float4 pixelColor = inTexture.read(gid).rgba;
+        int centroid = centroids[i];
+        float4 centroidColor = intToFloat4(centroid);
         float pointCentroidColorDiff = colorDifference(pixelColor, centroidColor);
-        
         if (pointCentroidColorDiff < colorDiff) {
             colorDiff = pointCentroidColorDiff;
             nearestCentroid = centroid;
         }
     }
     
-    int imgIdx = gid.x * imageWidth + gid.y
+    int imgIdx = gid.x * imageWidth + gid.y;
     if (memberships[imgIdx] != nearestCentroid) {
         memberships[imgIdx] = nearestCentroid;
         membershipChanged[imgIdx] = 1;
@@ -75,7 +84,7 @@ kernel void applyClusterColors(texture2d<float, access::read> inTexture [[textur
                                texture2d<float, access::write> outTexture [[texture(3)]],
                                uint2 gid [[thread_position_in_grid]]) {
     
-    int width = inTexture.imageWidth;
+    int width = inTexture.get_width();
     int i = gid.x * width + gid.y;
     uint membership = memberships[i];
     uint centroid = centroids[membership];
