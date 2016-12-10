@@ -24,9 +24,13 @@ class LPGPUKMeans {
         }
     }
     
+    // TODO: finish this function. We shouldn't init a pipeline because we have two functions this time.
+    func createComputePipeline() {
+        
+    }
     
-    
-    func generateClusters(inputTexture:MTLTexture, k:Int) {
+    // TODO: finish making necessary changes to squaresError, other stuff
+    func generateClusters(inputTexture:MTLTexture, k:Int) -> ([Int],[Int])  {
         let threshold:Float = 0.01;
         let n = inputTexture.arrayLength
         
@@ -35,33 +39,31 @@ class LPGPUKMeans {
         
         var centroids = [Int](repeating:0, count:k)
         for i in 0..<k {
-            let rand = randomNumberInRange(0..<Int(UInt32.max))
-            centroids[i] = rand
+            centroids[i] = randomNumberInRange(0..<n)
         }
         
         var memberships = [Int](repeating: -1, count: n)
         var clusterSizes = [Int](repeating: 0, count: k)
         
-        var squaresError:Float = 0
+        var squaresError:UnsafeMutablePointer<Float> = UnsafeMutablePointer.allocate(capacity: 1)
         let commandBuffer = metalContext.commandQueue.makeCommandBuffer()
 
         repeat {
-            squaresError = 0
+            squaresError.pointee = 0.0
             var newCentroidRed = [Float](repeating: 0,count:k)
             var newCentroidGreen = [Float](repeating: 0,count:k)
             var newCentroidBlue = [Float](repeating: 0,count:k)
             
             var newClusterSizes = [Float](repeating: 0, count: k)
             
-            let threadGroupCounts = MTLSizeMake(8,8,1)
-
-            let threadGroups = MTLSizeMake(inputTexture.width/threadGroupCounts.width, inputTexture.height/threadGroupCounts.height, 1);
             
-            let redBuffer = metalContext.createFloatArray(array: newCentroidRed)
+            
+            let redBuf = metalContext.createFloatArray(array: newCentroidRed)
             let greenBuf = metalContext.createFloatArray(array: newCentroidGreen)
             let blueBuf = metalContext.createFloatArray(array: newCentroidBlue)
             let membershipBuf = metalContext.createIntArray(array:memberships)
             let sizesBuf = metalContext.createIntArray(array: clusterSizes)
+            let errorBuf = metalContext.createPointer(f: squaresError)
             
             let centroidsBuf = metalContext.createIntArray(array:centroids)
             
@@ -70,16 +72,18 @@ class LPGPUKMeans {
             clusterCE.setTexture(inputTexture, at:0)
             clusterCE.setBuffer(membershipBuf, offset: 0, at: 1)
             
-            clusterCE.setBuffer(redBuffer, offset: 0, at: 2)
+            clusterCE.setBuffer(redBuf, offset: 0, at: 2)
             clusterCE.setBuffer(greenBuf, offset: 0, at: 3)
             clusterCE.setBuffer(blueBuf, offset: 0, at: 4)
             clusterCE.setBuffer(centroidsBuf, offset: 0, at: 5)
             clusterCE.setBuffer(sizesBuf, offset:0,at: 6)
+            clusterCE.setBuffer(errorBuf, offset:0, at: 7)
 
+            let threadGroupCounts = MTLSizeMake(8,8,1)
+
+            let threadGroups = MTLSizeMake(inputTexture.width/threadGroupCounts.width, inputTexture.height/threadGroupCounts.height, 1);
             clusterCE.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCounts)
             clusterCE.endEncoding()
-            
-            
         
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
@@ -88,12 +92,22 @@ class LPGPUKMeans {
                 let size = newClusterSizes[i]
                 if size > 0 {
                     
-                    var newCentroid = Int.fromRGB(r:(Float(newCentroidRed[i]) / Float(size)).toUInt8(),g:(Float(newCentroidGreen[i]) / Float(size)).toUInt8(), b:(Float(newCentroidBlue[i]) / Float(size)).toUInt8())
+                    var newCentroid = Int.fromRGB(
+                        r:(Float(newCentroidRed[i]) / Float(size)).toUInt8(),
+                        g:(Float(newCentroidGreen[i]) / Float(size)).toUInt8(),
+                        b:(Float(newCentroidBlue[i]) / Float(size)).toUInt8())
                     centroids[i] = newCentroid
                 }
             }
             
-        } while (squaresError / Float(n) > threshold)
+        } while (squaresError.pointee / Float(n) > threshold)
+        
+        //let clusters = zip(centroids, clusterSizes).map { Cluster(centroid: $0, size: $1) }
+        return (centroids, memberships)
+    }
+    
+    //TODO: finish this function 
+    func assignClusters () {
         
     }
 }

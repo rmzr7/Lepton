@@ -21,11 +21,15 @@ device float colorDifference(float4 color1, float4 color2) {
     return pow(r2-r1, 2) + pow(g2-g1, 2) + pow(b2-b1, 2);
 }
 
+// TODO: check correctness of this kernel
 kernel void findNearestCluster(texture2d<float, access::read> inTexture [[texture(0)]],
-                               device uint* memberships,
-                               device uint* membershipChanged,
-                               device uint* centroids,
-                               uint k,
+                               device uint* memberships [[buffer(1)]],
+                               device float* red [[buffer(2)]],
+                               device float* green [[buffer(3)]],
+                               device float* blue [[buffer(4)]],
+                               device uint* centroids [[buffer(5)]],
+                               device uint* clusterSizes [[buffer(6)]],
+                               uint squaresError,
                                uint2 gid [[thread_position_in_grid]]) {
     
     float colorDiff = FLT_MAX;
@@ -50,6 +54,31 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
     if (memberships[imgIdx] != nearestCentroid) {
         memberships[imgIdx] = nearestCentroid;
         membershipChanged[imgIdx] = 1;
+        atomic_fetch_add_explicit(&squaresError, 1, memory_order_relaxed);
     }
     
+    atomic_fetch_add_explicit(&clusterSizes[nearestCentroid], 1, memory_order_relaxed);
+    atomic_fetch_add_explicit(&red[nearestCentroid], pixelColor.r, memory_order_relaxed);
+    atomic_fetch_add_explicit(&green[nearestCentroid], pixelColor.g, memory_order_relaxed);
+    atomic_fetch_add_explicit(&blue[nearestCentroid], pixelColor.b, memory_order_relaxed);
+
 }
+
+// NEW: this is the kernel for the last loop in kmeansSegment in LPImageSegment.swift
+kernel void applyClusterColors(texture2d<float, access::read> inTexture [[texture(0)]],
+                               device uint* centroids [[buffer(1)]],
+                               device uint* memberships [[buffer(2)]],
+                               texture2d<float, access::write> outTexture [[texture(3)]],
+                               uint2 gid [[thread_position_in_grid]]) {
+    
+    int width = inTexture.imageWidth;
+    int i = gid.x * width + gid.y;
+    uint membership = memberships[i];
+    uint centroid = centroids[membership];
+    uint2 centroidImgIdx(centroid / width, centroid % width);
+    float4 rgba = inTexture.read(centroidImgIdx).rgba;
+    rgba.a = 1;
+    outTexture.write(rgba, gid);
+}
+
+
