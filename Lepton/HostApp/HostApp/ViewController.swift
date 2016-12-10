@@ -23,7 +23,8 @@ class ViewController: UIViewController {
         //let gaussian3 = lepton.GaussianFilterGenerator(1.0)
         //let x = lepton.blurImage(image!, mask: gaussian3)
         //let x = lepton.acceleratedBlurImageCPU(image!, mask:gaussian3)
-        let newImage = kmeans.kmeansSegment(image!);
+        let newImage = kmeans.KMeansGPU(image!);
+        //let newImage = kmeans.kmeansSegment(image!);
         
         let imageView = UIImageView(image: newImage)
         imageView.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
