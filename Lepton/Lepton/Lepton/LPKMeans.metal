@@ -9,6 +9,10 @@
 #include <metal_stdlib>
 using namespace metal;
 
+struct KMeansParams {
+    int k;
+};
+
 device float colorDifference(float4 color1, float4 color2) {
     float r1 = color1.r;
     float g1 = color1.g;
@@ -21,6 +25,8 @@ device float colorDifference(float4 color1, float4 color2) {
     return pow(r2-r1, 2) + pow(g2-g1, 2) + pow(b2-b1, 2);
 }
 
+
+
 // TODO: check correctness of this kernel
 kernel void findNearestCluster(texture2d<float, access::read> inTexture [[texture(0)]],
                                device int* memberships [[buffer(1)]],
@@ -30,6 +36,8 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
                                device int* centroids [[buffer(5)]],
                                device int* clusterSizes [[buffer(6)]],
                                device int* membershipChanged [[buffer(7)]],
+                               constant KMeansParams &k [[buffer(8)]]
+                               constant
                                uint2 gid [[thread_position_in_grid]]) {
     
     float colorDiff = FLT_MAX;

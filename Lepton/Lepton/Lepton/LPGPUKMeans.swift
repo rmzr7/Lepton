@@ -9,6 +9,10 @@
 import Foundation
 import Metal
 
+struct KMeansParams {
+    var k:Int
+}
+
 class LPGPUKMeans {
     var metalContext:LPMetalContext
     
@@ -61,6 +65,11 @@ class LPGPUKMeans {
             clusterCE.setBuffer(centroidsBuf, offset: 0, at: 5)
             clusterCE.setBuffer(sizesBuf, offset:0,at: 6)
             clusterCE.setBuffer(membershipChangedBuf, offset:0, at: 7)
+            
+            var kmeansparams = KMeansParams(k: k)
+            let params = metalContext.device.makeBuffer(bytes: &kmeansparams, length: MemoryLayout<KMeansParams>.size, options: .cpuCacheModeWriteCombined)
+            clusterCE.setBuffer(params, offset:0, at:8)
+            
 
             let threadGroupCounts = MTLSizeMake(8,8,1)
             let threadGroups = MTLSizeMake(width/threadGroupCounts.width, height/threadGroupCounts.height, 1);
