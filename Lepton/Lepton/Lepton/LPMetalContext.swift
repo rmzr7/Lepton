@@ -89,17 +89,12 @@ class LPMetalContext {
 
 extension LPMetalContext {
     
-    func createPointer(f:UnsafeMutablePointer<Float>) -> MTLBuffer {
-        return device.makeBuffer(bytes: f, length: 4, options: .cpuCacheModeWriteCombined)
-    }
-    
     func createFloatArray(array:[Float]) -> MTLBuffer  {
         let length = array.count * MemoryLayout<Float>.size
-//        device.makeBuffer(bytes: array, length: length, options: .cpuCacheModeWriteCombined)
         return device.makeBuffer(bytes: array, length: length, options: .cpuCacheModeWriteCombined)
     }
     
-    func createIntArray(array:[Int]) ->MTLBuffer {
+    func createIntArray(array:[Int]) -> MTLBuffer {
         let length = array.count * MemoryLayout<Int>.size
         return device.makeBuffer(bytes: array, length: length, options: .cpuCacheModeWriteCombined)
     }

@@ -23,13 +23,13 @@ device float colorDifference(float4 color1, float4 color2) {
 
 // TODO: check correctness of this kernel
 kernel void findNearestCluster(texture2d<float, access::read> inTexture [[texture(0)]],
-                               device uint* memberships [[buffer(1)]],
+                               device int* memberships [[buffer(1)]],
                                device float* red [[buffer(2)]],
                                device float* green [[buffer(3)]],
                                device float* blue [[buffer(4)]],
-                               device uint* centroids [[buffer(5)]],
-                               device uint* clusterSizes [[buffer(6)]],
-                               uint squaresError,
+                               device int* centroids [[buffer(5)]],
+                               device int* clusterSizes [[buffer(6)]],
+                               device int* membershipChanged [[buffer(7)]],
                                uint2 gid [[thread_position_in_grid]]) {
     
     float colorDiff = FLT_MAX;
@@ -37,11 +37,8 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
     int imageWidth = inTexture.imageWidth;
     int imageHeight = inTexture.imageHeight;
     for (int i = 0; i < k; i++) {
-        uint centroid = centroids[i];
-        uint centroid_x = centroid / imageWidth;
-        uint centroid_y = centroid % imageWidth;
+        float4 centroidColor = centroids[i].rgba;
         float4 pixelColor = inTexture.read(gid).rgba;
-        float4 centroidColor = inTexture.read(centroid_x, centroid_y).rgba;
         float pointCentroidColorDiff = colorDifference(pixelColor, centroidColor);
         
         if (pointCentroidColorDiff < colorDiff) {
@@ -54,7 +51,6 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
     if (memberships[imgIdx] != nearestCentroid) {
         memberships[imgIdx] = nearestCentroid;
         membershipChanged[imgIdx] = 1;
-        atomic_fetch_add_explicit(&squaresError, 1, memory_order_relaxed);
     }
     
     atomic_fetch_add_explicit(&clusterSizes[nearestCentroid], 1, memory_order_relaxed);
