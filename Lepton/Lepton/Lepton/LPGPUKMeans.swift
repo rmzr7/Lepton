@@ -28,11 +28,11 @@ class LPGPUKMeans {
         let width = inputTexture.width
         let height = inputTexture.height
         
-        var centroids = [Int](repeating:0, count:k)
-        for i in 0..<k {
-            centroids[i] = randomNumberInRange(0..<Int(UInt32.max))
-        }
-        
+        var centroids = uniqueNumbers(0, Int(UInt32.max)/2, UInt32.max)
+//        for i in 0..<k {
+//            centroids[i] = randomNumberInRange(0..<Int(UInt32.max))
+//        }
+//        
         let memberships = [Int](repeating: -1, count: n)
         let membershipChanged = [Int](repeating: 0, count: n)
         
@@ -131,6 +131,14 @@ class LPGPUKMeans {
         
         return outputTexture
     }
+}
+
+func uniqueRandoms(numberOfRandoms: Int, minNum: Int, maxNum: UInt32) -> [Int] {
+    var uniqueNumbers = Set<Int>()
+    while uniqueNumbers.count < numberOfRandoms {
+        uniqueNumbers.insert(Int(arc4random_uniform(maxNum + 1)) + minNum)
+    }
+    return Array(uniqueNumbers)
 }
 
 extension Int {

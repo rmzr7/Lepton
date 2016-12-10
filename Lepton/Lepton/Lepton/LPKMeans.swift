@@ -85,6 +85,7 @@ private func findNearestCluster(_ point: LPPixel, centroids: [LPPixel], k: Int) 
 
 
 private extension Array {
+    
     func randomValues(_ num: Int) -> [Element] {
         
         var indices = [Int]()
