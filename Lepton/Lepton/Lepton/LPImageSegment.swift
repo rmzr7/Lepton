@@ -50,12 +50,8 @@ open class LPImageSegment: NSObject{
         let metalContext = LPMetalContext(device: device)
         let img = LPImage(image:image)!
         let imageTexture = metalContext.imageToMetalTexture(image:img)!
-        let outputTexture = 
         
         
         
-        
-        
-        return metalContext.imageFromTexture(texture: <#T##MTLTexture#>)
     }
 }

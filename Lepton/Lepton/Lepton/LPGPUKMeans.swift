@@ -63,7 +63,7 @@ class LPGPUKMeans {
             let membershipBuf = metalContext.createIntArray(array:memberships)
             let sizesBuf = metalContext.createIntArray(array: clusterSizes)
             
-            let centroidsBuf = createIntArray(array:centoids)
+            let centroidsBuf = metalContext.createIntArray(array:centroids)
             
             let clusterCE = commandBuffer.makeComputeCommandEncoder()
             clusterCE.setComputePipelineState(clusterPipelineState)
