@@ -7,6 +7,8 @@
 //
 
 #include <metal_stdlib>
+#include <metal_atomic>
+
 using namespace metal;
 
 struct KMeansParams {
@@ -69,12 +71,28 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
         memberships[imgIdx] = nearestCentroid;
         membershipChanged[imgIdx] = 1;
     }
-    
-    atomic_fetch_add_explicit(&clusterSizes[nearestCentroid], 1, memory_order_relaxed);
-    atomic_fetch_add_explicit(&red[nearestCentroid], pixelColor.r, memory_order_relaxed);
-    atomic_fetch_add_explicit(&green[nearestCentroid], pixelColor.g, memory_order_relaxed);
-    atomic_fetch_add_explicit(&blue[nearestCentroid], pixelColor.b, memory_order_relaxed);
 
+    
+    
+    threadgroup atomic_int clusterSize;
+    atomic_store_explicit(&clusterSize, (clusterSizes[nearestCentroid]), memory_order_relaxed);
+    atomic_fetch_add_explicit(&clusterSize, 1, memory_order_relaxed);
+    clusterSizes[nearestCentroid] = atomic_load_explicit(&clusterSize, memory_order_relaxed);
+    
+    threadgroup atomic_int pixelRed;
+    atomic_store_explicit(&pixelRed, (red[nearestCentroid]), memory_order_relaxed);
+    atomic_fetch_add_explicit(&pixelRed, 1, memory_order_relaxed);
+    red[nearestCentroid] = atomic_load_explicit(&pixelRed, memory_order_relaxed);
+    
+    threadgroup atomic_int pixelG;
+    atomic_store_explicit(&pixelG, (green[nearestCentroid]), memory_order_relaxed);
+    atomic_fetch_add_explicit(&pixelG, 1, memory_order_relaxed);
+    green[nearestCentroid] = atomic_load_explicit(&pixelG, memory_order_relaxed);
+    
+    threadgroup atomic_int pixelB;
+    atomic_store_explicit(&pixelB, (blue[nearestCentroid]), memory_order_relaxed);
+    atomic_fetch_add_explicit(&pixelB, 1, memory_order_relaxed);
+    blue[nearestCentroid] = atomic_load_explicit(&pixelB, memory_order_relaxed);
 }
 
 // NEW: this is the kernel for the last loop in kmeansSegment in LPImageSegment.swift
