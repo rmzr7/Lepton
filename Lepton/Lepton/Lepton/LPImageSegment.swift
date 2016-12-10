@@ -15,8 +15,8 @@ open class LPImageSegment: NSObject{
         super.init()
     }
     
-    let kMeansThreshhold:Float = 0.002
-    let k = 8
+    let kMeansThreshhold:Float = 0.00001
+    let k = 6
     
     open func kmeansSegment (_ image:UIImage) -> UIImage? {
         let img = LPImage(image:image)!
@@ -24,11 +24,13 @@ open class LPImageSegment: NSObject{
         let imageHeight = img.height
         let numPixels = imageWidth * imageHeight
         let points = Array<LPPixel>(img.pixels)
-        let (clusters, memberships) = kMeans(points: points, k: k, threshold: kMeansThreshhold)
+        //let (clusters, memberships) = kMeans(points: points, k: k, threshold: kMeansThreshhold)
+        let (centroids, memberships) = kMeans(points: points, k: k, threshold: kMeansThreshhold)
+
         
         for i in 0..<numPixels {
             let membership = memberships[i]
-            let centroid = clusters[membership].centroid
+            let centroid = centroids[membership]
             let newR = centroid.red
             let newG = centroid.green
             let newB = centroid.blue
@@ -42,6 +44,7 @@ open class LPImageSegment: NSObject{
         return img.toUIImage()
     }
     
+    // TODO: finish this
     open func KMeansGPU(_ image:UIImage) -> UIImage? {
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("no GPU, aborting");
@@ -50,12 +53,12 @@ open class LPImageSegment: NSObject{
         let metalContext = LPMetalContext(device: device)
         let img = LPImage(image:image)!
         let imageTexture = metalContext.imageToMetalTexture(image:img)!
-        let outputTexture = 
+        //let outputTexture =
         
         
         
         
         
-        return metalContext.imageFromTexture(texture: <#T##MTLTexture#>)
+        return metalContext.imageFromTexture(texture: imageTexture)
     }
 }

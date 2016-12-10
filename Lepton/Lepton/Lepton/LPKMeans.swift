@@ -13,45 +13,43 @@ struct Cluster {
     let size: Int
 }
 
-func kMeans(points:[LPPixel], k:Int, threshold:Float = 0.001) -> ([Cluster], [Int]) {
+func kMeans(points:[LPPixel], k:Int, threshold:Float = 0.001) -> ([LPPixel], [Int]) {
     
     let n = points.count
     assert(k <= n, "k cannot be larger than the total number of points")
     
-//    creating k centroids
+    // creating k centroids
     var centroids = points.randomValues(k)
     
     var memberships = [Int](repeating: -1, count: n)
-    var clusterSizes = [Int](repeating: 0, count: k)
+    //var clusterSizes = [Int](repeating: 0, count: k)
     
-    var squaresError:Float = 0
+    var error:Float = 0
     var loopcount = 0
 
     repeat {
         loopcount += 1
-        //prevSquaresError = squaresError
-        squaresError = 0
+        error = 0
+        var clusterSizes = [Int](repeating: 0, count: k)
         var newCentroidRed = [Int](repeating: 0,count:k)
         var newCentroidGreen = [Int](repeating: 0,count:k)
         var newCentroidBlue = [Int](repeating: 0,count:k)
-        
-        var newClusterSizes = [Int](repeating: 0, count: k)
         
         for i in 0..<n {
             let point = points[i]
             let clusterIndex = findNearestCluster(point, centroids: centroids, k: k)
             if memberships[i] != clusterIndex {
-                squaresError += 1
+                error += 1
                 memberships[i] = clusterIndex
             }
-            newClusterSizes[clusterIndex] += 1
+            clusterSizes[clusterIndex] += 1
             newCentroidRed[clusterIndex] = newCentroidRed[clusterIndex] + Int(point.red)
             newCentroidGreen[clusterIndex] = newCentroidGreen[clusterIndex] + Int(point.green)
             newCentroidBlue[clusterIndex] = newCentroidBlue[clusterIndex] + Int(point.blue)
         }
         
         for i in 0..<k {
-            let size = newClusterSizes[i]
+            let size = clusterSizes[i]
             if size > 0 {
                 
                 centroids[i].red = (Float(newCentroidRed[i]) / Float(size)).toUInt8()
@@ -61,19 +59,21 @@ func kMeans(points:[LPPixel], k:Int, threshold:Float = 0.001) -> ([Cluster], [In
             }
         }
         
-        clusterSizes = newClusterSizes
-    } while (squaresError / Float(n) > threshold)
+        //clusterSizes = newClusterSizes
+
+    } while (error / Float(n) > threshold)
     
     print("loop count is \(loopcount)")
-    let clusters = zip(centroids, clusterSizes).map { Cluster(centroid: $0, size: $1) }
-    return (clusters, memberships)
+    //let clusters = zip(centroids, clusterSizes).map { Cluster(centroid: $0, size: $1) }
+    //return (clusters, memberships)
+    return (centroids, memberships)
 }
 
 private func findNearestCluster(_ point: LPPixel, centroids: [LPPixel], k: Int) -> Int {
     var minDistance = Float.infinity
     var clusterIndex = 0
     for i in 0..<k {
-        let distance = colorDifference2(color1: point, color2: centroids[i])
+        let distance = colorDifference(color1: point, color2: centroids[i])
         if distance < minDistance {
             minDistance = distance
             clusterIndex = i
