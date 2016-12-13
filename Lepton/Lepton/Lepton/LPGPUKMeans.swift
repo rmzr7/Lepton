@@ -59,8 +59,6 @@ class LPGPUKMeans {
             var centroidGreen = [Float](repeating: 0,count:bufferSize)
             var centroidBlue = [Float](repeating: 0,count:bufferSize)
             
-//            squaresError = [
-            
             var membershipBuf = metalContext.createIntArray(array: memberships)
             var redBuf = metalContext.createFloatArray(array: centroidRed)
             var greenBuf = metalContext.createFloatArray(array: centroidGreen)

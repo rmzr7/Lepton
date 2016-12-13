@@ -126,20 +126,19 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
 }
 
 kernel void applyClusterColors(texture2d<float, access::read> inTexture [[texture(0)]],
-                                                              texture2d<float, access::write> outTexture [[texture(1)]],
-                                                              device uint* centroids [[buffer(0)]],
-                                                              device uint* memberships [[buffer(1)]],
-                                                              uint2 gid [[thread_position_in_grid]]) {
-        
-        int imageWidth = inTexture.get_width();
-        int imageHeight = inTexture.get_height();
-        if (gid.x >= imageWidth || gid.y >= imageHeight)
-                return;
-        
-        int index = gid.y * imageWidth + gid.x;
-        int membership = memberships[index];
-        uint centroid = centroids[membership];
-        float4 rgba = intToFloat4(int(centroid));
-        outTexture.write(rgba, gid);
+                               texture2d<float, access::write> outTexture [[texture(1)]],
+                               device uint* centroids [[buffer(0)]],
+                               device uint* memberships [[buffer(1)]],
+                               uint2 gid [[thread_position_in_grid]]) {
+    
+    int imageWidth = inTexture.get_width();
+    int imageHeight = inTexture.get_height();
+    if (gid.x >= imageWidth || gid.y >= imageHeight)
+        return;
+    int index = gid.y * imageWidth + gid.x;
+    int membership = memberships[index];
+    uint centroid = centroids[membership];
+    float4 rgba = intToFloat4(int(centroid));
+    outTexture.write(rgba, gid);
 }
 
