@@ -156,9 +156,9 @@ class LPGPUKMeans {
 
         commandEncoder.setComputePipelineState(assignPipeline)
         commandEncoder.setTexture(inputTexture, at:0)
-        commandEncoder.setBuffer(centroidsBuf, offset:0, at:1)
-        commandEncoder.setBuffer(membershipBuf, offset:0, at:2)
-        commandEncoder.setTexture(outputTexture, at:3)
+        commandEncoder.setBuffer(centroidsBuf, offset:0, at:0)
+        commandEncoder.setBuffer(membershipBuf, offset:0, at:1)
+        commandEncoder.setTexture(outputTexture, at:1)
         
         commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCounts)
         commandEncoder.endEncoding()
