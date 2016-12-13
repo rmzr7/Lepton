@@ -109,6 +109,15 @@ class LPGPUKMeans {
             }
             
             for i in 0..<k {
+                
+                for j in 0..<regions {
+                    
+                }
+                
+                
+                
+                
+                
                 let size = clusterSizes[i]
                 if size > 0 {
                     
