@@ -25,7 +25,7 @@ class LPGPUKMeans {
     }
     
     // TODO: finish making necessary changes to squaresError, other stuff
-    func generateClusters(inputTexture:MTLTexture, k:Int) -> ([UInt32],[Int])  {
+    func generateClusters(inputTexture:MTLTexture, k:Int) -> ([UInt32],[Int32])  {
         let threshold:Float = 0.01;
         
         let width = inputTexture.width
@@ -48,8 +48,8 @@ class LPGPUKMeans {
         let threadGroups = MTLSizeMake(numRegionsWidth, numRegionsHeight, 1);
         let regions = numRegionsWidth * numRegionsHeight
         let bufferSize = k * regions;
-        let memberships = [Int](repeating: -1, count: n)
-        var squaresError = [Int](repeating: 0, count: n)
+        var memberships = [Int32](repeating: -1, count: n)
+        var squaresError = [UInt32](repeating: 0, count: n)
         
         repeat {
             error = 0
@@ -65,7 +65,7 @@ class LPGPUKMeans {
             var blueBuf = metalContext.createFloatArray(array: centroidBlue)
             var centroidsBuf = metalContext.createInt32Array(array:centroids)
             var sizesBuf = metalContext.createInt32Array(array: clusterSizes)
-            var membershipChangedBuf = metalContext.createIntArray(array: squaresError)
+            var membershipChangedBuf = metalContext.createInt32Array(array: squaresError)
             
             var clusterCE = commandBuffer.makeComputeCommandEncoder()
             let clusterPipleline = metalContext.createComputePipeline(function: "findNearestCluster")!
@@ -100,7 +100,8 @@ class LPGPUKMeans {
             centroidGreen = Array(UnsafeBufferPointer(start: unsafeBitCast(greenBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
             centroidBlue = Array(UnsafeBufferPointer(start: unsafeBitCast(blueBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
             
-            squaresError = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipChangedBuf.contents(), to:UnsafeMutablePointer<Int>.self), count: n))
+            squaresError = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipChangedBuf.contents(), to:UnsafeMutablePointer<UInt32>.self), count: n))
+            memberships = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipChangedBuf.contents(), to: UnsafeMutablePointer<Int32>.self), count: n))
             
             for i in 0..<n {
                 if squaresError[i] == 1 {
@@ -135,7 +136,7 @@ class LPGPUKMeans {
         return (centroids, memberships)
     }
     
-    func assignClusters (centroids:[UInt32], memberships:[Int], inputTexture:MTLTexture) -> MTLTexture {
+    func assignClusters (centroids:[UInt32], memberships:[Int32], inputTexture:MTLTexture) -> MTLTexture {
         
         let outputDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
         let outputTexture = metalContext.device.makeTexture(descriptor:outputDesc)
