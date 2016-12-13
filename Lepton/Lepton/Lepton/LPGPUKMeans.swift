@@ -109,22 +109,22 @@ class LPGPUKMeans {
             }
             
             for i in 0..<k {
-                
+                var red:Float = 0
+                var green:Float = 0
+                var blue:Float = 0
+                var size:UInt32 = 0
                 for j in 0..<regions {
-                    
+                    let idx = i * regions + j
+                    red += centroidRed[idx]
+                    green += centroidGreen[idx]
+                    blue += centroidBlue[idx]
+                    size += clusterSizes[idx]
                 }
-                
-                
-                
-                
-                
-                let size = clusterSizes[i]
                 if size > 0 {
-                    
                     let newCentroid = Int.fromRGB(
-                        r:(Float(centroidRed[i]) / Float(size)).toUInt8(),
-                        g:(Float(centroidGreen[i]) / Float(size)).toUInt8(),
-                        b:(Float(centroidBlue[i]) / Float(size)).toUInt8())
+                        r:(red / Float(size)).toUInt8(),
+                        g:(green / Float(size)).toUInt8(),
+                        b:(blue / Float(size)).toUInt8())
                     centroids[i] = UInt32(newCentroid)
                 }
             }
