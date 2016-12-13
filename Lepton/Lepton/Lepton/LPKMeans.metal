@@ -36,10 +36,7 @@ device float colorDifference(float4 color1, float4 color2) {
     float g2 = color2.g;
     float b2 = color2.b;
     
-//    float p2 = pow(r2-r1, 2);
-    return powerDiff(r1,r2) + powerDiff(g1,g2) + powerDiff(b1,b2)
-                                                           ;
-//                                                           return 4;
+    return powerDiff(r1,r2) + powerDiff(g1,g2) + powerDiff(b1,b2);
 }
 
 device float4 intToFloat4(int centroid) {
@@ -79,7 +76,7 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
     int size = 0;
     int k = params.k;
     int clusterIndex = 0;
-    float4 pixelColor = inTexture.read(gid).rgba;
+    float4 pixelColor = 255 * inTexture.read(gid).rgba;
     for (int i = 0; i < k; i++) {
         int centroid = centroids[i];
         float4 centroidColor = intToFloat4(centroid);
@@ -95,7 +92,7 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
 
     int imgIdx = gid.y * imageWidth + gid.x;
 
-    if (memberships[imgIdx] != nearestCentroid) {
+    if (memberships[imgIdx] != clusterIndex) {
         membershipChanged[imgIdx] = 1;
         memberships[imgIdx] = clusterIndex;
     }

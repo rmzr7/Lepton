@@ -35,10 +35,9 @@ class LPGPUKMeans {
 
 //        var centroids = uniqueRandoms(numberOfRandoms: k, minNum: Int(UInt32.max)/2, maxNum: UInt32.max)
 //        var centroids = [Int32](repeating: 429496719, count:k)
-        var centroids = [UInt32](repeating: 0, count:k)
+        var centroids = uniqueRandoms(numberOfRandoms: UInt32(k), minNum: (UInt32.max/UInt32(4)), maxNum: UInt32.max)
          
         var error:Float = 0
-        let commandBuffer = metalContext.commandQueue.makeCommandBuffer()
 
         let threadGroupCounts = MTLSizeMake(8,8,1)
         let threadGroupWidth = threadGroupCounts.width
@@ -49,9 +48,9 @@ class LPGPUKMeans {
         let regions = numRegionsWidth * numRegionsHeight
         let bufferSize = k * regions;
         var memberships = [Int32](repeating: -1, count: n)
-        var squaresError = [UInt32](repeating: 0, count: n)
         
         repeat {
+            var squaresError = [UInt32](repeating: 0, count: n)
             error = 0
             
             var clusterSizes = [UInt32](repeating: 0, count: bufferSize)
@@ -67,6 +66,7 @@ class LPGPUKMeans {
             var sizesBuf = metalContext.createInt32Array(array: clusterSizes)
             var membershipChangedBuf = metalContext.createInt32Array(array: squaresError)
             
+            let commandBuffer = metalContext.commandQueue.makeCommandBuffer()
             var clusterCE = commandBuffer.makeComputeCommandEncoder()
             let clusterPipleline = metalContext.createComputePipeline(function: "findNearestCluster")!
             clusterCE.setComputePipelineState(clusterPipleline)
@@ -101,7 +101,7 @@ class LPGPUKMeans {
             centroidBlue = Array(UnsafeBufferPointer(start: unsafeBitCast(blueBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
             
             squaresError = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipChangedBuf.contents(), to:UnsafeMutablePointer<UInt32>.self), count: n))
-            memberships = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipChangedBuf.contents(), to: UnsafeMutablePointer<Int32>.self), count: n))
+            memberships = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipBuf.contents(), to: UnsafeMutablePointer<Int32>.self), count: n))
             
             for i in 0..<n {
                 if squaresError[i] == 1 {
@@ -169,10 +169,10 @@ class LPGPUKMeans {
     }
 }
 
-func uniqueRandoms(numberOfRandoms: Int, minNum: Int, maxNum: UInt32) -> [Int] {
-    var uniqueNumbers = Set<Int>()
-    while uniqueNumbers.count < numberOfRandoms {
-        var random = Int(arc4random_uniform(maxNum)) + minNum
+func uniqueRandoms(numberOfRandoms: UInt32, minNum: UInt32, maxNum: UInt32) -> [UInt32] {
+    var uniqueNumbers = Set<UInt32>()
+    while UInt32(uniqueNumbers.count) < numberOfRandoms {
+        let random = UInt32(arc4random_uniform(maxNum-minNum)) + minNum
         uniqueNumbers.insert(random)
     }
     return Array(uniqueNumbers)
