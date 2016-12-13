@@ -49,7 +49,7 @@ class LPGPUKMeans {
         let regions = numRegionsWidth * numRegionsHeight
         let bufferSize = k * regions;
         let memberships = [Int](repeating: -1, count: n)
-        var squaresError = [Int](repeating: 0, count: n)
+        var squaresError = [UInt32](repeating: 0, count: n)
         
         repeat {
             error = 0
@@ -67,7 +67,7 @@ class LPGPUKMeans {
             var blueBuf = metalContext.createFloatArray(array: centroidBlue)
             var centroidsBuf = metalContext.createInt32Array(array:centroids)
             var sizesBuf = metalContext.createInt32Array(array: clusterSizes)
-            var membershipChangedBuf = metalContext.createIntArray(array: squaresError)
+            var membershipChangedBuf = metalContext.createInt32Array(array: squaresError)
             
             var clusterCE = commandBuffer.makeComputeCommandEncoder()
             let clusterPipleline = metalContext.createComputePipeline(function: "findNearestCluster")!
@@ -102,7 +102,7 @@ class LPGPUKMeans {
             centroidGreen = Array(UnsafeBufferPointer(start: unsafeBitCast(greenBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
             centroidBlue = Array(UnsafeBufferPointer(start: unsafeBitCast(blueBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
             
-            squaresError = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipChangedBuf.contents(), to:UnsafeMutablePointer<Int>.self), count: n))
+            squaresError = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipChangedBuf.contents(), to:UnsafeMutablePointer<UInt32>.self), count: n))
             
             for i in 0..<n {
                 if squaresError[i] == 1 {
