@@ -10,7 +10,11 @@ import Foundation
 import Metal
 
 struct KMeansParams {
-    var k:Int
+    var k:Int32
+}
+
+struct debug {
+    var idx:Int
 }
 
 class LPGPUKMeans {
@@ -21,65 +25,85 @@ class LPGPUKMeans {
     }
     
     // TODO: finish making necessary changes to squaresError, other stuff
-    func generateClusters(inputTexture:MTLTexture, k:Int) -> ([Int],[Int])  {
+    func generateClusters(inputTexture:MTLTexture, k:Int) -> ([UInt32],[Int])  {
         let threshold:Float = 0.01;
-        let n = inputTexture.arrayLength
         
         let width = inputTexture.width
         let height = inputTexture.height
         
-        var centroids = uniqueRandoms(numberOfRandoms: 0, minNum: Int(UInt32.max)/2, maxNum: UInt32.max)
-//        for i in 0..<k {
-//            centroids[i] = randomNumberInRange(0..<Int(UInt32.max))
-//        }
-//        
-        let memberships = [Int](repeating: -1, count: n)
-        let membershipChanged = [Int](repeating: 0, count: n)
-        
+        let n = width*height
+
+//        var centroids = uniqueRandoms(numberOfRandoms: k, minNum: Int(UInt32.max)/2, maxNum: UInt32.max)
+//        var centroids = [Int32](repeating: 429496719, count:k)
+        var centroids = [UInt32](repeating: 0, count:k)
+         
         var error:Float = 0
         let commandBuffer = metalContext.commandQueue.makeCommandBuffer()
 
+        let threadGroupCounts = MTLSizeMake(8,8,1)
+        let threadGroupWidth = threadGroupCounts.width
+        let threadGroupHeight = threadGroupCounts.height
+        let numRegionsWidth = (width + threadGroupWidth - 1) / threadGroupWidth
+        let numRegionsHeight = (height + threadGroupHeight - 1) / threadGroupHeight
+        let threadGroups = MTLSizeMake(numRegionsWidth, numRegionsHeight, 1);
+        let regions = numRegionsWidth * numRegionsHeight
+        let bufferSize = k * regions;
+        let memberships = [Int](repeating: -1, count: n)
+        let squaresError = [Int](repeating: 0, count: n)
+        
         repeat {
             error = 0
-            let clusterSizes = [Int](repeating: 0, count: k)
-            var newCentroidRed = [Float](repeating: 0,count:k)
-            var newCentroidGreen = [Float](repeating: 0,count:k)
-            var newCentroidBlue = [Float](repeating: 0,count:k)
             
-            let membershipBuf = metalContext.createIntArray(array: memberships)
-            let redBuf = metalContext.createFloatArray(array: newCentroidRed)
-            let greenBuf = metalContext.createFloatArray(array: newCentroidGreen)
-            let blueBuf = metalContext.createFloatArray(array: newCentroidBlue)
-            let centroidsBuf = metalContext.createIntArray(array:centroids)
-            let sizesBuf = metalContext.createIntArray(array: clusterSizes)
-            let membershipChangedBuf = metalContext.createIntArray(array: membershipChanged)
+            var clusterSizes = [UInt32](repeating: 0, count: bufferSize)
+            var centroidRed = [Float](repeating: 0,count:bufferSize)
+            var centroidGreen = [Float](repeating: 0,count:bufferSize)
+            var centroidBlue = [Float](repeating: 0,count:bufferSize)
             
-            let clusterCE = commandBuffer.makeComputeCommandEncoder()
+//            squaresError = [
+            
+            var membershipBuf = metalContext.createIntArray(array: memberships)
+            var redBuf = metalContext.createFloatArray(array: centroidRed)
+            var greenBuf = metalContext.createFloatArray(array: centroidGreen)
+            var blueBuf = metalContext.createFloatArray(array: centroidBlue)
+            var centroidsBuf = metalContext.createInt32Array(array:centroids)
+            var sizesBuf = metalContext.createInt32Array(array: clusterSizes)
+            var membershipChangedBuf = metalContext.createIntArray(array: squaresError)
+            
+            var clusterCE = commandBuffer.makeComputeCommandEncoder()
             let clusterPipleline = metalContext.createComputePipeline(function: "findNearestCluster")!
             clusterCE.setComputePipelineState(clusterPipleline)
             clusterCE.setTexture(inputTexture, at:0)
-            clusterCE.setBuffer(membershipBuf, offset: 0, at: 1)
-            clusterCE.setBuffer(redBuf, offset: 0, at: 2)
-            clusterCE.setBuffer(greenBuf, offset: 0, at: 3)
-            clusterCE.setBuffer(blueBuf, offset: 0, at: 4)
-            clusterCE.setBuffer(centroidsBuf, offset: 0, at: 5)
-            clusterCE.setBuffer(sizesBuf, offset:0,at: 6)
-            clusterCE.setBuffer(membershipChangedBuf, offset:0, at: 7)
+            clusterCE.setBuffer(membershipBuf, offset: 0, at: 0)
+            clusterCE.setBuffer(redBuf, offset: 0, at: 1)
+            clusterCE.setBuffer(greenBuf, offset: 0, at: 2)
+            clusterCE.setBuffer(blueBuf, offset: 0, at: 3)
+            clusterCE.setBuffer(centroidsBuf, offset: 0, at: 4)
+            clusterCE.setBuffer(sizesBuf, offset:0,at: 5)
+            clusterCE.setBuffer(membershipChangedBuf, offset:0, at: 6)
             
-            var kmeansparams = KMeansParams(k: k)
+            var kmeansparams = KMeansParams(k: Int32(k))
             let params = metalContext.device.makeBuffer(bytes: &kmeansparams, length: MemoryLayout<KMeansParams>.size, options: .cpuCacheModeWriteCombined)
-            clusterCE.setBuffer(params, offset:0, at:8)
+            clusterCE.setBuffer(params, offset:0, at:7)
             
 
-            let threadGroupCounts = MTLSizeMake(8,8,1)
-            let threadGroups = MTLSizeMake(width/threadGroupCounts.width, height/threadGroupCounts.height, 1);
+            var debug = [Float](repeating: 0,count:threadGroups.width * threadGroups.height)
+
+            var debugBuffer = metalContext.device.makeBuffer(bytes: &debug, length:MemoryLayout<Int32>.size * debug.count, options: [])
+            clusterCE.setBuffer(debugBuffer, offset: 0, at: 8)
+            
+
             clusterCE.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCounts)
             clusterCE.endEncoding()
             commandBuffer.commit()
             commandBuffer.waitUntilCompleted()
             
+            clusterSizes = Array(UnsafeBufferPointer(start: unsafeBitCast(sizesBuf.contents(), to:UnsafeMutablePointer<UInt32>.self), count: bufferSize))
+            centroidRed = Array(UnsafeBufferPointer(start: unsafeBitCast(redBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
+            centroidGreen = Array(UnsafeBufferPointer(start: unsafeBitCast(greenBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
+            centroidBlue = Array(UnsafeBufferPointer(start: unsafeBitCast(blueBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
+
             for i in 0..<n {
-                if membershipChanged[i] == 1 {
+                if squaresError[i] == 1 {
                     error += 1
                 }
             }
@@ -89,10 +113,10 @@ class LPGPUKMeans {
                 if size > 0 {
                     
                     let newCentroid = Int.fromRGB(
-                        r:(Float(newCentroidRed[i]) / Float(size)).toUInt8(),
-                        g:(Float(newCentroidGreen[i]) / Float(size)).toUInt8(),
-                        b:(Float(newCentroidBlue[i]) / Float(size)).toUInt8())
-                    centroids[i] = newCentroid
+                        r:(Float(centroidRed[i]) / Float(size)).toUInt8(),
+                        g:(Float(centroidGreen[i]) / Float(size)).toUInt8(),
+                        b:(Float(centroidBlue[i]) / Float(size)).toUInt8())
+                    centroids[i] = UInt32(newCentroid)
                 }
             }
             
@@ -102,19 +126,21 @@ class LPGPUKMeans {
         return (centroids, memberships)
     }
     
-    func assignClusters (centroids:[Int], memberships:[Int], inputTexture:MTLTexture) -> MTLTexture {
+    func assignClusters (centroids:[UInt32], memberships:[Int], inputTexture:MTLTexture) -> MTLTexture {
         
         let outputDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
         let outputTexture = metalContext.device.makeTexture(descriptor:outputDesc)
         
-        let threadGroupCount = MTLSizeMake(8,8,1)
-        let threadGroups = MTLSizeMake(inputTexture.width/threadGroupCount.width, inputTexture.height/threadGroupCount.height, 1);
+        let threadGroupCounts = MTLSizeMake(8,8,1)
+        let threadGroupWidth = threadGroupCounts.width
+        let threadGroupHeight = threadGroupCounts.height
+        let threadGroups = MTLSizeMake((inputTexture.width + threadGroupWidth - 1)/threadGroupWidth, (inputTexture.height + threadGroupHeight - 1)/threadGroupHeight, 1);
         
 
         let assignPipeline = metalContext.createComputePipeline(function: "applyClusterColors")!
         let commandBuffer = metalContext.commandQueue.makeCommandBuffer()
         let commandEncoder = commandBuffer.makeComputeCommandEncoder()
-        let centroidsBuf = metalContext.createIntArray(array:centroids)
+        let centroidsBuf = metalContext.createInt32Array(array:centroids)
         let membershipBuf = metalContext.createIntArray(array:memberships)
 
         commandEncoder.setComputePipelineState(assignPipeline)
@@ -123,7 +149,7 @@ class LPGPUKMeans {
         commandEncoder.setBuffer(membershipBuf, offset:0, at:2)
         commandEncoder.setTexture(outputTexture, at:3)
         
-        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCount)
+        commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCounts)
         commandEncoder.endEncoding()
 
         commandBuffer.commit()
@@ -136,18 +162,19 @@ class LPGPUKMeans {
 func uniqueRandoms(numberOfRandoms: Int, minNum: Int, maxNum: UInt32) -> [Int] {
     var uniqueNumbers = Set<Int>()
     while uniqueNumbers.count < numberOfRandoms {
-        uniqueNumbers.insert(Int(arc4random_uniform(maxNum + 1)) + minNum)
+        var random = Int(arc4random_uniform(maxNum)) + minNum
+        uniqueNumbers.insert(random)
     }
     return Array(uniqueNumbers)
 }
 
 extension Int {
-    static func fromRGB(r:UInt8, g:UInt8, b:UInt8) -> Int {
-        var pixel = 0
-        pixel = Int(UInt32(r) | (UInt32(pixel) & 0xFFFFFF00))
-        pixel = Int((UInt32(g) << 8) | (UInt32(pixel) & 0xFFFF00FF))
-        pixel = Int((UInt32(b) << 16) | (UInt32(pixel) & 0xFF00FFFF))
-        pixel = Int((UInt32(1) << 24) | (UInt32(pixel) & 0x00FFFFFF))
+    static func fromRGB(r:UInt8, g:UInt8, b:UInt8) -> Int32 {
+        var pixel:Int32 = 0
+        pixel = Int32(UInt32(r) | (UInt32(pixel) & 0xFFFFFF00))
+        pixel = Int32((UInt32(g) << 8) | (UInt32(pixel) & 0xFFFF00FF))
+        pixel = Int32((UInt32(b) << 16) | (UInt32(pixel) & 0xFF00FFFF))
+        pixel = Int32((UInt32(1) << 24) | (UInt32(pixel) & 0x00FFFFFF))
         return pixel
     }
 }

@@ -13,7 +13,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let image = UIImage(named: "high res")
+        let image = #imageLiteral(resourceName: "SeaSideSmall")
         
         //let lepton = LPImageFilter()
         let kmeans = LPImageSegment()
@@ -23,7 +23,7 @@ class ViewController: UIViewController {
         //let gaussian3 = lepton.GaussianFilterGenerator(1.0)
         //let x = lepton.blurImage(image!, mask: gaussian3)
         //let x = lepton.acceleratedBlurImageCPU(image!, mask:gaussian3)
-        let newImage = kmeans.KMeansGPU(image!, k: 2);
+        let newImage = kmeans.KMeansGPU(image, k: 2);
         //let newImage = kmeans.kmeansSegment(image!);
         
         let imageView = UIImageView(image: newImage)

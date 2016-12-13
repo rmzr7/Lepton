@@ -91,12 +91,17 @@ extension LPMetalContext {
     
     func createFloatArray(array:[Float]) -> MTLBuffer  {
         let length = array.count * MemoryLayout<Float>.size
-        return device.makeBuffer(bytes: array, length: length, options: .cpuCacheModeWriteCombined)
+        return device.makeBuffer(bytes: array, length: length, options: [])
     }
     
     func createIntArray(array:[Int]) -> MTLBuffer {
         let length = array.count * MemoryLayout<Int>.size
-        return device.makeBuffer(bytes: array, length: length, options: .cpuCacheModeWriteCombined)
+        return device.makeBuffer(bytes: array, length: length, options:[])
+    }
+    
+    func createInt32Array(array:[UInt32]) -> MTLBuffer {
+        let length = array.count * MemoryLayout<UInt32>.size
+        return device.makeBuffer(bytes: array, length: length, options:[])
     }
     
     func createComputePipeline(function:String) -> MTLComputePipelineState? {

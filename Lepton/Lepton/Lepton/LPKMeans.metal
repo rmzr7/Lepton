@@ -6,14 +6,26 @@
 //  Copyright © 2016 Rameez Remsudeen. All rights reserved.
 //
 
+
 #include <metal_stdlib>
+#include <metal_compute>
 #include <metal_atomic>
+#include <metal_math>
 
 using namespace metal;
 
 struct KMeansParams {
     int k;
 };
+
+struct debugBuff {
+    int idx;
+};
+
+device float powerDiff(float r1, float r2) {
+    return (r1-r2)*(r1-r2);
+//    return 4;
+}
 
 device float colorDifference(float4 color1, float4 color2) {
     float r1 = color1.r;
@@ -24,7 +36,10 @@ device float colorDifference(float4 color1, float4 color2) {
     float g2 = color2.g;
     float b2 = color2.b;
     
-    return pow(r2-r1, 2) + pow(g2-g1, 2) + pow(b2-b1, 2);
+//    float p2 = pow(r2-r1, 2);
+    return powerDiff(r1,r2) + powerDiff(g1,g2) + powerDiff(b1,b2)
+                                                           ;
+//                                                           return 4;
 }
 
 device float4 intToFloat4(int centroid) {
@@ -40,59 +55,73 @@ device float4 intToFloat4(int centroid) {
 
 // TODO: check correctness of this kernel
 kernel void findNearestCluster(texture2d<float, access::read> inTexture [[texture(0)]],
-                               device int* memberships [[buffer(1)]],
-                               device float* red [[buffer(2)]],
-                               device float* green [[buffer(3)]],
-                               device float* blue [[buffer(4)]],
-                               device int* centroids [[buffer(5)]],
-                               device int* clusterSizes [[buffer(6)]],
-                               device int* membershipChanged [[buffer(7)]],
-                               constant KMeansParams &params [[buffer(8)]],
-                               uint2 gid [[thread_position_in_grid]]) {
+                               device int* memberships [[buffer(0)]],
+                               device float* red [[buffer(1)]],
+                               device float* green [[buffer(2)]],
+                               device float* blue [[buffer(3)]],
+                               device uint* centroids [[buffer(4)]],
+                               device uint* clusterSizes [[buffer(5)]],
+                               device uint* membershipChanged [[buffer(6)]],
+                               constant KMeansParams &params [[buffer(7)]],
+                               device uint* debug [[buffer(8)]],
+                               uint2 gid [[thread_position_in_grid]],
+                               uint2 bid [[threadgroup_position_in_grid]],
+                               uint2 num_groups [[threadgroups_per_grid]]){
     
-    float colorDiff = FLT_MAX;
-    int nearestCentroid = -1;
-    int k = params.k;
     int imageWidth = inTexture.get_width();
-    float4 pixelColor = inTexture.read(gid).rgba;
+    int imageHeight = inTexture.get_height();
     
+    if (gid.x >= imageWidth|| gid.y >= imageHeight)
+        return;
+    
+    float colorDiff = MAXFLOAT;
+    int nearestCentroid = 0;
+    int size = 0;
+    int k = params.k;
+    int currentCentroid = 0;
+    float4 pixelColor = inTexture.read(gid).rgba;
     for (int i = 0; i < k; i++) {
         int centroid = centroids[i];
         float4 centroidColor = intToFloat4(centroid);
         float pointCentroidColorDiff = colorDifference(pixelColor, centroidColor);
+
         if (pointCentroidColorDiff < colorDiff) {
             colorDiff = pointCentroidColorDiff;
-            nearestCentroid = centroid;
+            size = clusterSizes[i];
+            nearestCentroid = centroids[i];
+            currentCentroid = i;
         }
     }
-    
-    int imgIdx = gid.x * imageWidth + gid.y;
+
+    int imgIdx = gid.y * imageWidth + gid.x;
+
     if (memberships[imgIdx] != nearestCentroid) {
-        memberships[imgIdx] = nearestCentroid;
         membershipChanged[imgIdx] = 1;
     }
-
     
+    int tIdx = bid.y * num_groups.x + bid.x;
+    int bufIdx = currentCentroid * num_groups.x * num_groups.y + tIdx;
     
     threadgroup atomic_int clusterSize;
-    atomic_store_explicit(&clusterSize, (clusterSizes[nearestCentroid]), memory_order_relaxed);
+    atomic_store_explicit(&clusterSize, (clusterSizes[bufIdx]), memory_order_relaxed);
     atomic_fetch_add_explicit(&clusterSize, 1, memory_order_relaxed);
-    clusterSizes[nearestCentroid] = atomic_load_explicit(&clusterSize, memory_order_relaxed);
+    clusterSizes[bufIdx] = atomic_load_explicit(&clusterSize, memory_order_relaxed);
     
-    threadgroup atomic_int pixelRed;
-    atomic_store_explicit(&pixelRed, (red[nearestCentroid]), memory_order_relaxed);
-    atomic_fetch_add_explicit(&pixelRed, 1, memory_order_relaxed);
-    red[nearestCentroid] = atomic_load_explicit(&pixelRed, memory_order_relaxed);
-    
+    threadgroup atomic_int pixelR;
+    atomic_store_explicit(&pixelR, int((red[bufIdx])), memory_order_relaxed);
+    atomic_store_explicit(&pixelR, 1, memory_order_relaxed);
+    atomic_fetch_add_explicit(&pixelR, 1, memory_order_relaxed);
+    red[bufIdx] = float(atomic_load_explicit(&pixelR, memory_order_relaxed));
+
     threadgroup atomic_int pixelG;
-    atomic_store_explicit(&pixelG, (green[nearestCentroid]), memory_order_relaxed);
+    atomic_store_explicit(&pixelG, (green[bufIdx]), memory_order_relaxed);
     atomic_fetch_add_explicit(&pixelG, 1, memory_order_relaxed);
-    green[nearestCentroid] = atomic_load_explicit(&pixelG, memory_order_relaxed);
-    
+    green[bufIdx] = atomic_load_explicit(&pixelG, memory_order_relaxed);
+
     threadgroup atomic_int pixelB;
-    atomic_store_explicit(&pixelB, (blue[nearestCentroid]), memory_order_relaxed);
+    atomic_store_explicit(&pixelB, (blue[bufIdx]), memory_order_relaxed);
     atomic_fetch_add_explicit(&pixelB, 1, memory_order_relaxed);
-    blue[nearestCentroid] = atomic_load_explicit(&pixelB, memory_order_relaxed);
+    blue[bufIdx] = atomic_load_explicit(&pixelB, memory_order_relaxed);
 }
 
 // NEW: this is the kernel for the last loop in kmeansSegment in LPImageSegment.swift
@@ -108,8 +137,8 @@ kernel void applyClusterColors(texture2d<float, access::read> inTexture [[textur
     uint centroid = centroids[membership];
     uint2 centroidImgIdx(centroid / width, centroid % width);
     float4 rgba = inTexture.read(centroidImgIdx).rgba;
-    rgba.a = 1;
-    outTexture.write(rgba, gid);
+//    rgba.a = 1;
+//    outTexture.write(rgba, gid);
 }
 
 

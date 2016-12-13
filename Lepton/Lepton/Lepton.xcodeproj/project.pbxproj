@@ -437,6 +437,7 @@
 				INFOPLIST_FILE = Lepton/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_LANGUAGE_REVISION = Metal12;
 				New_Setting = "";
 				PRODUCT_BUNDLE_IDENTIFIER = WR.Lepton;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -458,6 +459,7 @@
 				INFOPLIST_FILE = Lepton/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_LANGUAGE_REVISION = Metal12;
 				New_Setting = "";
 				PRODUCT_BUNDLE_IDENTIFIER = WR.Lepton;
 				PRODUCT_NAME = "$(TARGET_NAME)";
