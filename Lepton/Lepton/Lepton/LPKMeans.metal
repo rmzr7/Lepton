@@ -68,8 +68,8 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
                                uint2 bid [[threadgroup_position_in_grid]],
                                uint2 num_groups [[threadgroups_per_grid]]){
     
-    int imageWidth = inTexture.get_width();
-    int imageHeight = inTexture.get_height();
+    uint imageWidth = inTexture.get_width();
+    uint imageHeight = inTexture.get_height();
     
     if (gid.x >= imageWidth|| gid.y >= imageHeight)
         return;
@@ -78,7 +78,7 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
     int nearestCentroid = 0;
     int size = 0;
     int k = params.k;
-    int currentCentroid = 0;
+    int clusterIndex = 0;
     float4 pixelColor = inTexture.read(gid).rgba;
     for (int i = 0; i < k; i++) {
         int centroid = centroids[i];
@@ -89,7 +89,7 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
             colorDiff = pointCentroidColorDiff;
             size = clusterSizes[i];
             nearestCentroid = centroids[i];
-            currentCentroid = i;
+            clusterIndex = i;
         }
     }
 
@@ -97,10 +97,11 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
 
     if (memberships[imgIdx] != nearestCentroid) {
         membershipChanged[imgIdx] = 1;
+        memberships[imgIdx] = clusterIndex;
     }
     
     int tIdx = bid.y * num_groups.x + bid.x;
-    int bufIdx = currentCentroid * num_groups.x * num_groups.y + tIdx;
+    int bufIdx = clusterIndex * num_groups.x * num_groups.y + tIdx;
     
     threadgroup atomic_int clusterSize;
     atomic_store_explicit(&clusterSize, (clusterSizes[bufIdx]), memory_order_relaxed);
@@ -108,20 +109,20 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
     clusterSizes[bufIdx] = atomic_load_explicit(&clusterSize, memory_order_relaxed);
     
     threadgroup atomic_int pixelR;
-    atomic_store_explicit(&pixelR, int((red[bufIdx])), memory_order_relaxed);
-    atomic_store_explicit(&pixelR, 1, memory_order_relaxed);
-    atomic_fetch_add_explicit(&pixelR, 1, memory_order_relaxed);
+    atomic_store_explicit(&pixelR, int(red[bufIdx]), memory_order_relaxed);
+    //atomic_store_explicit(&pixelR, 1, memory_order_relaxed);
+    atomic_fetch_add_explicit(&pixelR, int(pixelColor.r), memory_order_relaxed);
     red[bufIdx] = float(atomic_load_explicit(&pixelR, memory_order_relaxed));
 
     threadgroup atomic_int pixelG;
-    atomic_store_explicit(&pixelG, (green[bufIdx]), memory_order_relaxed);
-    atomic_fetch_add_explicit(&pixelG, 1, memory_order_relaxed);
-    green[bufIdx] = atomic_load_explicit(&pixelG, memory_order_relaxed);
+    atomic_store_explicit(&pixelG, int(green[bufIdx]), memory_order_relaxed);
+    atomic_fetch_add_explicit(&pixelG, int(pixelColor.g), memory_order_relaxed);
+    green[bufIdx] = float(atomic_load_explicit(&pixelG, memory_order_relaxed));
 
     threadgroup atomic_int pixelB;
-    atomic_store_explicit(&pixelB, (blue[bufIdx]), memory_order_relaxed);
-    atomic_fetch_add_explicit(&pixelB, 1, memory_order_relaxed);
-    blue[bufIdx] = atomic_load_explicit(&pixelB, memory_order_relaxed);
+    atomic_store_explicit(&pixelB, int(blue[bufIdx]), memory_order_relaxed);
+    atomic_fetch_add_explicit(&pixelB, int(pixelColor.b), memory_order_relaxed);
+    blue[bufIdx] = float(atomic_load_explicit(&pixelB, memory_order_relaxed));
 }
 
 kernel void applyClusterColors(texture2d<float, access::read> inTexture [[texture(0)]],
