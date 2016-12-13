@@ -124,21 +124,21 @@ kernel void findNearestCluster(texture2d<float, access::read> inTexture [[textur
     blue[bufIdx] = atomic_load_explicit(&pixelB, memory_order_relaxed);
 }
 
-// NEW: this is the kernel for the last loop in kmeansSegment in LPImageSegment.swift
 kernel void applyClusterColors(texture2d<float, access::read> inTexture [[texture(0)]],
-                               device uint* centroids [[buffer(1)]],
-                               device uint* memberships [[buffer(2)]],
-                               texture2d<float, access::write> outTexture [[texture(3)]],
-                               uint2 gid [[thread_position_in_grid]]) {
-    
-    int width = inTexture.get_width();
-    int i = gid.x * width + gid.y;
-    uint membership = memberships[i];
-    uint centroid = centroids[membership];
-    uint2 centroidImgIdx(centroid / width, centroid % width);
-    float4 rgba = inTexture.read(centroidImgIdx).rgba;
-//    rgba.a = 1;
-//    outTexture.write(rgba, gid);
+                                                              texture2d<float, access::write> outTexture [[texture(1)]],
+                                                              device uint* centroids [[buffer(0)]],
+                                                              device uint* memberships [[buffer(1)]],
+                                                              uint2 gid [[thread_position_in_grid]]) {
+        
+        int imageWidth = inTexture.get_width();
+        int imageHeight = inTexture.get_height();
+        if (gid.x >= imageWidth || gid.y >= imageHeight)
+                return;
+        
+        int index = gid.y * imageWidth + gid.x;
+        int membership = memberships[index];
+        uint centroid = centroids[membership];
+        float4 rgba = intToFloat4(int(centroid));
+        outTexture.write(rgba, gid);
 }
-
 
