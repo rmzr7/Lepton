@@ -49,7 +49,7 @@ class LPGPUKMeans {
         let regions = numRegionsWidth * numRegionsHeight
         let bufferSize = k * regions;
         let memberships = [Int](repeating: -1, count: n)
-        let squaresError = [Int](repeating: 0, count: n)
+        var squaresError = [Int](repeating: 0, count: n)
         
         repeat {
             error = 0
@@ -101,7 +101,9 @@ class LPGPUKMeans {
             centroidRed = Array(UnsafeBufferPointer(start: unsafeBitCast(redBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
             centroidGreen = Array(UnsafeBufferPointer(start: unsafeBitCast(greenBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
             centroidBlue = Array(UnsafeBufferPointer(start: unsafeBitCast(blueBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
-
+            
+            squaresError = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipChangedBuf.contents(), to:UnsafeMutablePointer<Int>.self), count: n))
+            
             for i in 0..<n {
                 if squaresError[i] == 1 {
                     error += 1

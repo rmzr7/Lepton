@@ -28,5 +28,6 @@ kernel void gaussian_filter(texture2d<float, access::read> inTexture [[texture(0
         }
     }
     rgba.a = 1;
-    outTexture.write(rgba, gid);
+    uint2 newgid(gid.x, inTexture.get_height()-gid.y);
+    outTexture.write(rgba, newgid);
 }
