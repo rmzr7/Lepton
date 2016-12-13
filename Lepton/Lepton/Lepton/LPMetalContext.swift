@@ -94,8 +94,8 @@ extension LPMetalContext {
         return device.makeBuffer(bytes: array, length: length, options: [])
     }
     
-    func createIntArray(array:[Int]) -> MTLBuffer {
-        let length = array.count * MemoryLayout<Int>.size
+    func createIntArray(array:[Int32]) -> MTLBuffer {
+        let length = array.count * MemoryLayout<Int32>.size
         return device.makeBuffer(bytes: array, length: length, options:[])
     }
     
