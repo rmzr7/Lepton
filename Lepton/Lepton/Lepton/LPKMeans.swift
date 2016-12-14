@@ -58,12 +58,13 @@ func kMeans(points:[LPPixel], k:Int, threshold:Float = 0.001) -> ([LPPixel], [In
 
             }
         }
-        
+        print("loop count is \(loopcount)")
+
         //clusterSizes = newClusterSizes
 
     } while (error / Float(n) > threshold)
     
-    print("loop count is \(loopcount)")
+    print("final loop count is \(loopcount)")
     //let clusters = zip(centroids, clusterSizes).map { Cluster(centroid: $0, size: $1) }
     //return (clusters, memberships)
     return (centroids, memberships)

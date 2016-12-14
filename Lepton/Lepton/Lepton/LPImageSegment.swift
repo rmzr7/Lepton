@@ -15,17 +15,15 @@ open class LPImageSegment: NSObject{
         super.init()
     }
     
-    let kMeansThreshhold:Float = 0.00001
-    let k = 6
     
-    open func kmeansSegment (_ image:UIImage) -> UIImage? {
+    open func kmeansSegment (_ image:UIImage, k:Int, threshold:Float) -> UIImage? {
         let img = LPImage(image:image)!
         let imageWidth = img.width
         let imageHeight = img.height
         let numPixels = imageWidth * imageHeight
         let points = Array<LPPixel>(img.pixels)
         //let (clusters, memberships) = kMeans(points: points, k: k, threshold: kMeansThreshhold)
-        let (centroids, memberships) = kMeans(points: points, k: k, threshold: kMeansThreshhold)
+        let (centroids, memberships) = kMeans(points: points, k: k, threshold: threshold)
 
         
         for i in 0..<numPixels {
@@ -44,21 +42,34 @@ open class LPImageSegment: NSObject{
         return img.toUIImage()
     }
     
-    open func KMeansGPU(_ image:UIImage, k:Int) -> UIImage? {
+    open func KMeansGPU(_ image:UIImage, k:Int, threshold: Float) -> UIImage? {
         guard let device = MTLCreateSystemDefaultDevice() else {
             fatalError("no GPU, aborting");
             return nil;
         }
         let metalContext = LPMetalContext(device: device)
         let img = LPImage(image:image)!
-        let imageTexture = metalContext.imageToMetalTexture(image:img)!
+        let pixels = img.pixels
+        let initialPoints = uniqueRandoms(numberOfRandoms: UInt32(k), minNum: 0, maxNum: UInt32(img.width) * UInt32(img.height))
+        let initialCentroids = initialPoints.map{pixels[Int($0)].value}
+        
+        let imageTexture = metalContext.imgToMetalTexture(image:img)!
         
         var kmeans = LPGPUKMeans(metalContext:metalContext)
         
-        let (centroids, memberships) = kmeans.generateClusters(inputTexture:imageTexture,k: k)
+        let (centroids, memberships) = kmeans.generateClusters(inputTexture:imageTexture,k: k, initialCentroids:initialCentroids)
         
         let outputTexture = kmeans.assignClusters(centroids: centroids, memberships: memberships, inputTexture: imageTexture)
         
         return metalContext.imageFromTexture(texture: outputTexture)
+    }
+    
+    func uniqueRandoms(numberOfRandoms: UInt32, minNum: UInt32, maxNum: UInt32) -> [UInt32] {
+        var uniqueNumbers = Set<UInt32>()
+        while UInt32(uniqueNumbers.count) < numberOfRandoms {
+            let random = UInt32(arc4random_uniform(maxNum-minNum)) + minNum
+            uniqueNumbers.insert(random)
+        }
+        return Array(uniqueNumbers)
     }
 }

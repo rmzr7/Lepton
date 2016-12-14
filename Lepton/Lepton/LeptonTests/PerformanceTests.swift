@@ -14,6 +14,7 @@ import UIKit
 class PerformanceTests: XCTestCase {
     
     var lepton = LPImageFilter()
+    var kmeans = LPImageSegment()
     var gaussian:LPMask!
     var bundle:Bundle!
     var image:UIImage!
@@ -22,8 +23,8 @@ class PerformanceTests: XCTestCase {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         bundle = Bundle(for: type(of: self))
 //        image = 
-        image = UIImage(named: "seaSideTest.jpg", in: bundle, compatibleWith: nil)
-        gaussian = lepton.makeGaussianFilter(10)
+        image = UIImage(named: "500x500.png", in: bundle, compatibleWith: nil)
+        gaussian = lepton.GaussianFilterGenerator(2)
     }
     
     override func tearDown() {
@@ -31,17 +32,41 @@ class PerformanceTests: XCTestCase {
         super.tearDown()
     }
     
-    func testCPUPerformance() {
+    func testBlurPerformance() {
         // This is an example of a performance test case.
         self.measure {
             // Put the code you want to measure the time of here.
-            var blurImage = self.lepton.blurImage(self.image, mask: self.gaussian)
+            self.lepton.blurImage(self.image, mask: self.gaussian)
         }
     }
     
-    func testCPUSIMDPerformance() {
+    func testSIMDBlurPerformance() {
         self.measure {
-            var blurImage = self.lepton.acceleratedBlurImageCPU(self.image, mask: self.gaussian)
+            self.lepton.acceleratedBlurImageCPU(self.image, mask: self.gaussian)
+        }
+    }
+    
+    func testGPUBlurPerformance() {
+        // This is an example of a performance test case.
+        self.measure {
+            // Put the code you want to measure the time of here.
+            self.lepton.acceleratedImageBlurGPU(self.image, mask: self.gaussian)
+        }
+    }
+    
+    func testKMeansPerformance() {
+        // This is an example of a performance test case.
+        self.measure {
+            // Put the code you want to measure the time of here.
+            self.kmeans.kmeansSegment(self.image, k:8, threshold:0.001)
+        }
+    }
+    
+    func testGPUKMeansPerformance() {
+        // This is an example of a performance test case.
+        self.measure {
+            // Put the code you want to measure the time of here.
+            self.kmeans.KMeansGPU(self.image, k:8, threshold:0.001)
         }
     }
     

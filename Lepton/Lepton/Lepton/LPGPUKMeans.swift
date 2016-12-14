@@ -11,6 +11,8 @@ import Metal
 
 struct KMeansParams {
     var k:Int32
+    var numRegionsWidth:Int32
+    var numRegionsHeight:Int32
 }
 
 struct debug {
@@ -25,8 +27,8 @@ class LPGPUKMeans {
     }
     
     // TODO: finish making necessary changes to squaresError, other stuff
-    func generateClusters(inputTexture:MTLTexture, k:Int) -> ([UInt32],[Int32])  {
-        let threshold:Float = 0.01;
+    func generateClusters(inputTexture:MTLTexture, k:Int, initialCentroids:[UInt32]) -> ([UInt32],[Int32])  {
+        let threshold:Float = 0.0001;
         
         let width = inputTexture.width
         let height = inputTexture.height
@@ -35,7 +37,7 @@ class LPGPUKMeans {
 
 //        var centroids = uniqueRandoms(numberOfRandoms: k, minNum: Int(UInt32.max)/2, maxNum: UInt32.max)
 //        var centroids = [Int32](repeating: 429496719, count:k)
-        var centroids = uniqueRandoms(numberOfRandoms: UInt32(k), minNum: (UInt32.max/UInt32(4)), maxNum: UInt32.max)
+        var centroids = initialCentroids//uniqueRandoms(numberOfRandoms: UInt32(k), minNum: 0, maxNum: n)
          
         var error:Float = 0
 
@@ -54,21 +56,21 @@ class LPGPUKMeans {
             error = 0
             
             var clusterSizes = [UInt32](repeating: 0, count: bufferSize)
-            var centroidRed = [Float](repeating: 0,count:bufferSize)
-            var centroidGreen = [Float](repeating: 0,count:bufferSize)
-            var centroidBlue = [Float](repeating: 0,count:bufferSize)
+            var centroidRed = [UInt32](repeating: 0,count:bufferSize)
+            var centroidGreen = [UInt32](repeating: 0,count:bufferSize)
+            var centroidBlue = [UInt32](repeating: 0,count:bufferSize)
             
             var membershipBuf = metalContext.createIntArray(array: memberships)
-            var redBuf = metalContext.createFloatArray(array: centroidRed)
-            var greenBuf = metalContext.createFloatArray(array: centroidGreen)
-            var blueBuf = metalContext.createFloatArray(array: centroidBlue)
+            var redBuf = metalContext.createInt32Array(array: centroidRed)
+            var greenBuf = metalContext.createInt32Array(array: centroidGreen)
+            var blueBuf = metalContext.createInt32Array(array: centroidBlue)
             var centroidsBuf = metalContext.createInt32Array(array:centroids)
             var sizesBuf = metalContext.createInt32Array(array: clusterSizes)
             var membershipChangedBuf = metalContext.createInt32Array(array: squaresError)
             
-            let commandBuffer = metalContext.commandQueue.makeCommandBuffer()
+            var commandBuffer = metalContext.commandQueue.makeCommandBuffer()
             var clusterCE = commandBuffer.makeComputeCommandEncoder()
-            let clusterPipleline = metalContext.createComputePipeline(function: "findNearestCluster")!
+            var clusterPipleline = metalContext.createComputePipeline(function: "findNearestCluster")!
             clusterCE.setComputePipelineState(clusterPipleline)
             clusterCE.setTexture(inputTexture, at:0)
             clusterCE.setBuffer(membershipBuf, offset: 0, at: 0)
@@ -79,8 +81,8 @@ class LPGPUKMeans {
             clusterCE.setBuffer(sizesBuf, offset:0,at: 5)
             clusterCE.setBuffer(membershipChangedBuf, offset:0, at: 6)
             
-            var kmeansparams = KMeansParams(k: Int32(k))
-            let params = metalContext.device.makeBuffer(bytes: &kmeansparams, length: MemoryLayout<KMeansParams>.size, options: .cpuCacheModeWriteCombined)
+            var kmeansparams = KMeansParams(k: Int32(k), numRegionsWidth: Int32(numRegionsWidth), numRegionsHeight: Int32(numRegionsHeight))
+            var params = metalContext.device.makeBuffer(bytes: &kmeansparams, length: MemoryLayout<KMeansParams>.size, options: .cpuCacheModeWriteCombined)
             clusterCE.setBuffer(params, offset:0, at:7)
             
 
@@ -96,9 +98,9 @@ class LPGPUKMeans {
             commandBuffer.waitUntilCompleted()
             
             clusterSizes = Array(UnsafeBufferPointer(start: unsafeBitCast(sizesBuf.contents(), to:UnsafeMutablePointer<UInt32>.self), count: bufferSize))
-            centroidRed = Array(UnsafeBufferPointer(start: unsafeBitCast(redBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
-            centroidGreen = Array(UnsafeBufferPointer(start: unsafeBitCast(greenBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
-            centroidBlue = Array(UnsafeBufferPointer(start: unsafeBitCast(blueBuf.contents(), to:UnsafeMutablePointer<Float>.self), count: bufferSize))
+            centroidRed = Array(UnsafeBufferPointer(start: unsafeBitCast(redBuf.contents(), to:UnsafeMutablePointer<UInt32>.self), count: bufferSize))
+            centroidGreen = Array(UnsafeBufferPointer(start: unsafeBitCast(greenBuf.contents(), to:UnsafeMutablePointer<UInt32>.self), count: bufferSize))
+            centroidBlue = Array(UnsafeBufferPointer(start: unsafeBitCast(blueBuf.contents(), to:UnsafeMutablePointer<UInt32>.self), count: bufferSize))
             
             squaresError = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipChangedBuf.contents(), to:UnsafeMutablePointer<UInt32>.self), count: n))
             memberships = Array(UnsafeBufferPointer(start: unsafeBitCast(membershipBuf.contents(), to: UnsafeMutablePointer<Int32>.self), count: n))
@@ -110,9 +112,9 @@ class LPGPUKMeans {
             }
             
             for i in 0..<k {
-                var red:Float = 0
-                var green:Float = 0
-                var blue:Float = 0
+                var red:UInt32 = 0
+                var green:UInt32 = 0
+                var blue:UInt32 = 0
                 var size:UInt32 = 0
                 for j in 0..<regions {
                     let idx = i * regions + j
@@ -123,9 +125,9 @@ class LPGPUKMeans {
                 }
                 if size > 0 {
                     let newCentroid = Int.fromRGB(
-                        r:(red / Float(size)).toUInt8(),
-                        g:(green / Float(size)).toUInt8(),
-                        b:(blue / Float(size)).toUInt8())
+                        r:(Float(red) / Float(size)).toUInt8(),
+                        g:(Float(green) / Float(size)).toUInt8(),
+                        b:(Float(blue) / Float(size)).toUInt8())
                     centroids[i] = UInt32(newCentroid)
                 }
             }
@@ -138,7 +140,7 @@ class LPGPUKMeans {
     
     func assignClusters (centroids:[UInt32], memberships:[Int32], inputTexture:MTLTexture) -> MTLTexture {
         
-        let outputDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
+        let outputDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Uint, width: inputTexture.width, height: inputTexture.height, mipmapped: false)
         let outputTexture = metalContext.device.makeTexture(descriptor:outputDesc)
         
         let threadGroupCounts = MTLSizeMake(8,8,1)
@@ -169,14 +171,7 @@ class LPGPUKMeans {
     }
 }
 
-func uniqueRandoms(numberOfRandoms: UInt32, minNum: UInt32, maxNum: UInt32) -> [UInt32] {
-    var uniqueNumbers = Set<UInt32>()
-    while UInt32(uniqueNumbers.count) < numberOfRandoms {
-        let random = UInt32(arc4random_uniform(maxNum-minNum)) + minNum
-        uniqueNumbers.insert(random)
-    }
-    return Array(uniqueNumbers)
-}
+
 
 extension Int {
     static func fromRGB(r:UInt8, g:UInt8, b:UInt8) -> Int32 {

@@ -10,6 +10,15 @@
 		13578B641DF11741002A8CF8 /* Lepton.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC08BF281DDBDA9000F82684 /* Lepton.framework */; };
 		13578B651DF11741002A8CF8 /* Lepton.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CC08BF281DDBDA9000F82684 /* Lepton.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		13578B6B1DF11BED002A8CF8 /* LPFilters.metal in Sources */ = {isa = PBXBuildFile; fileRef = 13578B6A1DF11BED002A8CF8 /* LPFilters.metal */; };
+		135D74D21E00594400C2FDD6 /* PerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135D74D11E00594400C2FDD6 /* PerformanceTests.swift */; };
+		135D74D51E00599500C2FDD6 /* 400x400.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 135D74D41E00599500C2FDD6 /* 400x400.jpg */; };
+		135D74D71E0059FC00C2FDD6 /* 200x200.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 135D74D61E0059FC00C2FDD6 /* 200x200.jpg */; };
+		135D74D91E005A4300C2FDD6 /* 800x800.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 135D74D81E005A4300C2FDD6 /* 800x800.jpg */; };
+		135D74DB1E005C4C00C2FDD6 /* 1000x1000.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 135D74DA1E005C4C00C2FDD6 /* 1000x1000.jpg */; };
+		135D74DD1E005CF200C2FDD6 /* 2000x2000.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 135D74DC1E005CF200C2FDD6 /* 2000x2000.jpg */; };
+		135D74DF1E005E1500C2FDD6 /* 3008x1960.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 135D74DE1E005E1500C2FDD6 /* 3008x1960.jpg */; };
+		135D74E11E005FB000C2FDD6 /* 1920x1200.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 135D74E01E005FB000C2FDD6 /* 1920x1200.jpg */; };
+		135D74E31E006B9500C2FDD6 /* 500x500.png in Resources */ = {isa = PBXBuildFile; fileRef = 135D74E21E006B9500C2FDD6 /* 500x500.png */; };
 		2D0D0C4F1DEA60C6008B35A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B8970D8B1DDAAFA200C8EB10 /* Assets.xcassets */; };
 		2DD180BE1DFBDFA30015909B /* LPKMeans.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2DD180BD1DFBDFA30015909B /* LPKMeans.metal */; };
 		B8970D851DDAAFA200C8EB10 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8970D841DDAAFA200C8EB10 /* AppDelegate.swift */; };
@@ -83,6 +92,15 @@
 
 /* Begin PBXFileReference section */
 		13578B6A1DF11BED002A8CF8 /* LPFilters.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = LPFilters.metal; path = ../../Lepton/Lepton/LPFilters.metal; sourceTree = "<group>"; };
+		135D74D11E00594400C2FDD6 /* PerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PerformanceTests.swift; path = ../../Lepton/LeptonTests/PerformanceTests.swift; sourceTree = "<group>"; };
+		135D74D41E00599500C2FDD6 /* 400x400.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 400x400.jpg; path = ../../../../400x400.jpg; sourceTree = "<group>"; };
+		135D74D61E0059FC00C2FDD6 /* 200x200.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 200x200.jpg; path = ../../../../200x200.jpg; sourceTree = "<group>"; };
+		135D74D81E005A4300C2FDD6 /* 800x800.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 800x800.jpg; path = ../../../../800x800.jpg; sourceTree = "<group>"; };
+		135D74DA1E005C4C00C2FDD6 /* 1000x1000.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 1000x1000.jpg; path = ../../../../1000x1000.jpg; sourceTree = "<group>"; };
+		135D74DC1E005CF200C2FDD6 /* 2000x2000.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 2000x2000.jpg; path = ../../../../2000x2000.jpg; sourceTree = "<group>"; };
+		135D74DE1E005E1500C2FDD6 /* 3008x1960.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 3008x1960.jpg; path = ../../../../3008x1960.jpg; sourceTree = "<group>"; };
+		135D74E01E005FB000C2FDD6 /* 1920x1200.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = 1920x1200.jpg; path = ../../../../1920x1200.jpg; sourceTree = "<group>"; };
+		135D74E21E006B9500C2FDD6 /* 500x500.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 500x500.png; path = ../../../../500x500.png; sourceTree = "<group>"; };
 		2DD180BD1DFBDFA30015909B /* LPKMeans.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = LPKMeans.metal; path = ../../Lepton/Lepton/LPKMeans.metal; sourceTree = "<group>"; };
 		B8970D811DDAAFA200C8EB10 /* HostApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HostApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8970D841DDAAFA200C8EB10 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -167,6 +185,15 @@
 			isa = PBXGroup;
 			children = (
 				B8970D991DDAAFA200C8EB10 /* HostAppTests.swift */,
+				135D74D61E0059FC00C2FDD6 /* 200x200.jpg */,
+				135D74D41E00599500C2FDD6 /* 400x400.jpg */,
+				135D74E21E006B9500C2FDD6 /* 500x500.png */,
+				135D74D81E005A4300C2FDD6 /* 800x800.jpg */,
+				135D74DA1E005C4C00C2FDD6 /* 1000x1000.jpg */,
+				135D74E01E005FB000C2FDD6 /* 1920x1200.jpg */,
+				135D74DC1E005CF200C2FDD6 /* 2000x2000.jpg */,
+				135D74DE1E005E1500C2FDD6 /* 3008x1960.jpg */,
+				135D74D11E00594400C2FDD6 /* PerformanceTests.swift */,
 				B8970D9B1DDAAFA200C8EB10 /* Info.plist */,
 			);
 			path = HostAppTests;
@@ -334,7 +361,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				135D74DF1E005E1500C2FDD6 /* 3008x1960.jpg in Resources */,
+				135D74D51E00599500C2FDD6 /* 400x400.jpg in Resources */,
+				135D74DB1E005C4C00C2FDD6 /* 1000x1000.jpg in Resources */,
+				135D74E11E005FB000C2FDD6 /* 1920x1200.jpg in Resources */,
 				2D0D0C4F1DEA60C6008B35A6 /* Assets.xcassets in Resources */,
+				135D74D91E005A4300C2FDD6 /* 800x800.jpg in Resources */,
+				135D74DD1E005CF200C2FDD6 /* 2000x2000.jpg in Resources */,
+				135D74E31E006B9500C2FDD6 /* 500x500.png in Resources */,
+				135D74D71E0059FC00C2FDD6 /* 200x200.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,6 +398,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				135D74D21E00594400C2FDD6 /* PerformanceTests.swift in Sources */,
 				B8970D9A1DDAAFA200C8EB10 /* HostAppTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

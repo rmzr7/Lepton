@@ -42,6 +42,28 @@ class LPMetalContext {
         return imageTexture
     }
     
+    func imgToMetalTexture(image:LPImage) -> MTLTexture? {
+        
+        let height = image.height
+        let width = image.width
+        
+        let textureDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Uint, width: width, height: height, mipmapped: false)
+        
+        let region = MTLRegionMake2D(0, 0, width, height)
+        let imageTexture = device.makeTexture(descriptor: textureDesc)
+        
+        guard let rawData = image.LPPixelToInt().baseAddress else {
+            return nil
+        }
+        
+        let bytesPerRow = 4 * width
+        
+        imageTexture.replace(region: region, mipmapLevel: 0, withBytes: rawData, bytesPerRow: bytesPerRow);
+        
+        return imageTexture
+    }
+
+    
     // Turns a mask into a Metal texture
     func maskToMetalTexture(mask:LPMask) -> MTLTexture {
         
